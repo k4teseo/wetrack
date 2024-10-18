@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import time from datetime
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,11 +40,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'dj_rest.auth',
+    'dj_rest_auth.registration',
+    'users',
     'corsheaders',
     'auth_app',
     'currency',
     'tracker',
 ]
+
+SITE_ID = 1
 
 CORS_ALLOW_ALL_ORIGINS= True
 
@@ -85,6 +95,18 @@ REST_FRAMEWORK = {
     ],
 }
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
+
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_COOKIE': 'wetrack-auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'wetrack-refresh-token',
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
