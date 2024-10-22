@@ -1,5 +1,6 @@
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
+
 
 const FormField = ({ title, value, placeholder, handleChangeText, otherStyles, ...props }) => {
     const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +17,14 @@ const FormField = ({ title, value, placeholder, handleChangeText, otherStyles, .
             placeholderTextColor="#7b7b8b"
             secureTextEntry={title === 'Password' && !showPassword}
             />
+
+            {title === 'Password' && (
+                <TouchableOpacity onPress={() =>
+                    setShowPassword(!showPassword)}>
+
+                </TouchableOpacity>
+                )}
+
             </View>
         </View>
         )
