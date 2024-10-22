@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, TextInput } from 'react-native';
+import { Text, View } from 'react-native';
+import FormField from '../components/FormField';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [form, setForm] = useState({
+      email: '',
+      password: '',
+      })
 
   const handleLogin = () => {
     // Add your login logic here
@@ -12,26 +15,23 @@ const Login = () => {
 
   return (
     <View>
-      <Text style={styles.h1}>WeTrack</Text>
-      <Text style={styles.h3}>Log In</Text>
-      <Text>Username</Text>
-          <TextInput/>
+        <Text className="text-2xl text-white text-semibold mt=10 font-psemibold">Log in to WeTrack</Text>
+        <FormField
+        title="Email"
+        value={form.email}
+        handleChangeText={(e) => setForm({...form, email: e})}
+        otherStyles="mt-7"
+        keyboardType="email-address"
+        />
+        <FormField
+        title="Password"
+        value={form.password}
+        handleChangeText={(e) => setForm({...form, password: e})}
+        otherStyles="mt-7"
+        />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  h1: {
-    fontSize: 50,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-
-  h3: {
-      fontSize: 30,
-      fontWeight: 'bold',
-      color: 'black',
-      },
-  });
 
 export default Login;
