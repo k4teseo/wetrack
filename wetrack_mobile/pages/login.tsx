@@ -13,7 +13,7 @@ const Login = () => {
   return (
     <View>
       <Text style={styles.h1}>WeTrack</Text>
-      <text style={style.h3}>Log In</Text>
+      <Text style={styles.h3}>Log In</Text>
       <Text>Username</Text>
           <TextInput/>
     </View>
@@ -22,13 +22,13 @@ const Login = () => {
 
 const styles = StyleSheet.create({
   h1: {
-    fontSize: 35,
+    fontSize: 50,
     fontWeight: 'bold',
     color: 'black',
   },
 
   h3: {
-      fontSize: 20,
+      fontSize: 30,
       fontWeight: 'bold',
       color: 'black',
       },
