@@ -4,7 +4,7 @@ import FormField from '../components/FormField';
 
 const Login = () => {
   const [form, setForm] = useState({
-      email: '',
+      username: '',
       password: '',
       })
 
@@ -17,11 +17,10 @@ const Login = () => {
     <View>
         <Text className="text-2xl text-white text-semibold mt=10 font-psemibold">Log in to WeTrack</Text>
         <FormField
-        title="Email"
-        value={form.email}
-        handleChangeText={(e) => setForm({...form, email: e})}
+        title="Username"
+        value={form.username}
+        handleChangeText={(e) => setForm({...form, username: e})}
         otherStyles="mt-7"
-        keyboardType="email-address"
         />
         <FormField
         title="Password"
