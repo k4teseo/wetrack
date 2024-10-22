@@ -1,31 +1,29 @@
 from pathlib import Path
 from datetime import timedelta
-import environ
+from django.conf import settings
 import os
-from django.core.exceptions import ImproperlyConfigured
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-ROOT_DIR = BASE_DIR.parent  # This should be the directory containing .env
-
-# Load environment variables from .env file
 from dotenv import load_dotenv
-env_path = ROOT_DIR / '.env'
-load_dotenv(env_path)
 
-# Function to get environment variables
-def get_env_variable(var_name):
-   try:
-       return os.environ[var_name]
-   except KeyError:
-       error_msg = f"Set the {var_name} environment variable"
-       raise ImproperlyConfigured(error_msg)
+load_dotenv()
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+if DEBUG:
+    # Development settings
+    SECURE_SSL_REDIRECT = False
+    SECURE_PROXY_SSL_HEADER = None
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+else:
+    # Production settings
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 ALLOWED_HOSTS = []
 
@@ -38,6 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+
+    # third party apps
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
@@ -47,8 +47,10 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'corsheaders',
+
+    # apps
     'users',
-    'auth_app.apps.AuthAppConfig',
+    'auth_app',
     'currency',
     'tracker',
 ]
@@ -100,25 +102,47 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 REST_AUTH = {
+    'USER_DETAILS_SERIALIZER': 'auth_app.views.UserSerializer',
     'USE_JWT': True,
     'JWT_AUTH_COOKIE': 'wetrack-auth',
     'JWT_AUTH_REFRESH_COOKIE': 'wetrack-refresh-token',
+    'JWT_AUTH_HTTPONLY': False,
+    'LOGOUT_ON_GET': False,c
 }
 
 # Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'wetrack'),
-        'USER': os.environ.get('DB_USER', 'wetrackuser'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
         'PORT': os.environ.get('DB_PORT', '5432'),
+        'OPTIONS': {
+            'sslmode': 'require' if os.environ.get('DEVELOPMENT_MODE', 'True') != 'True' else 'prefer',
+        },
     }
 }
+
+# SSL
+if os.environ.get('DEVELOPMENT_MODE', 'True') == 'True':
+    SECURE_SSL_REDIRECT = False
+    SECURE_PROXY_SSL_HEADER = None
+else:
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -158,9 +182,12 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # django-allauth settings
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_AUTHENTICATION = False
 
 SITE_ID = 1
