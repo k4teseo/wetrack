@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
-import FormField from '../components/FormField';
+import FormField from '../../components/FormField';
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -9,13 +9,14 @@ const Login = () => {
       })
 
   const handleLogin = () => {
-    // Add your login logic here
+    // Add login logic here
     Alert.alert('Log In', `Username: ${username}\nPassword: ${password}`);
   };
 
   return (
     <View>
-        <Text className="text-2xl text-white text-semibold mt=10 font-psemibold">Log in to WeTrack</Text>
+        <Text>WeTrack</Text>
+        <Text>Log In</Text>
         <FormField
         title="Username"
         value={form.username}
