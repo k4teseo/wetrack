@@ -1,18 +1,24 @@
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import FormField from '../../components/FormField';
+import CustomButton from '../../components/CustomButton';
 
 const Signup = () => {
-    const [form, setForm] = useState({
-        name: '',
-        username: '',
-        password: '',
-        })
+  const [isSubmitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    username: "",
+    password: "",
+  });
 
-    const handleSignup = () => {
-        // Add signup logic here
-        Alert.alert('Signup', `Name: ${name}\nUsername: ${username}\nPassword: ${password}`);
-    };
+
+const submit = async () => {
+    if (form.name === "" || form.username === "" || form.password === "") {
+      Alert.alert("Error", "Please fill in all fields");
+    }
+    setSubmitting(true);
+}
+
 
 return (
     <View>
@@ -36,9 +42,17 @@ return (
         handleChangeText={(e) => setForm({...form, password: e})}
         otherStyles="mt-7"
         />
+
+        <CustomButton
+        title="Sign Up"
+        handlePress={submit}
+        containerStyles="mt-7"
+        isLoading={isSubmitting}
+        />
     </View>
   );
 };
+
 
 export default Signup;
 
