@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import FormField from '../../components/FormField';
+import CustomButton from '../../components/CustomButton';
 
 const Login = () => {
+  const [isSubmitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
       username: '',
       password: '',
       })
 
-  const handleLogin = () => {
-    // Add login logic here
-    Alert.alert('Log In', `Username: ${username}\nPassword: ${password}`);
-  };
+  const submit = async () => {
+      if (form.username === "" || form.password === "") {
+        Alert.alert("Error", "Please fill in all fields");
+      }
+      setSubmitting(true);
+  }
 
   return (
     <View>
@@ -28,6 +32,13 @@ const Login = () => {
         value={form.password}
         handleChangeText={(e) => setForm({...form, password: e})}
         otherStyles="mt-7"
+        />
+
+        <CustomButton
+        title="Log In"
+        handlePress={submit}
+        containerStyles="mt-7"
+        isLoading={isSubmitting}
         />
     </View>
   );
