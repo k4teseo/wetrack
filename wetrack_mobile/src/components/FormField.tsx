@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from "react-native";
 
 import { eye, eyeHide } from "../constants/icons.tsx";
 
@@ -14,30 +14,61 @@ const FormField = ({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <View className={`space-y-2 ${otherStyles}`}>
-      <Text className="text-base text-gray-100 font-pmedium">{title}</Text>
+      <View style={[styles.container, otherStyles]}>
+        <Text style={styles.label}>{title}</Text>
 
-      <View className="w-full h-16 px-4 bg-black-100 rounded-2xl border-2 border-black-200 focus:border-secondary flex flex-row items-center">
-        <TextInput
-          className="flex-1 text-white font-psemibold text-base"
-          value={value}
-          placeholder={placeholder}
-          placeholderTextColor="#7B7B8B"
-          onChangeText={handleChangeText}
-          secureTextEntry={title === "Password" && !showPassword}
-          {...props}
-        />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            value={value}
+            placeholder={placeholder}
+            placeholderTextColor="#7B7B8B"
+            onChangeText={handleChangeText}
+            secureTextEntry={title === "Password" && !showPassword}
+            {...props}
+          />
 
-        {title === "Password" && (
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Image
-              source={!showPassword ? eye : eyeHide}
-            />
-          </TouchableOpacity>
-        )}
+          {title === "Password" && (
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Image
+                source={!showPassword ? eye : eyeHide}
+                style={styles.icon}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-    </View>
-  );
-};
+    );
+  };
 
-export default FormField;
+  const styles = StyleSheet.create({
+    container: {
+      marginTop: 35,
+    },
+    label: {
+      fontSize: 18,
+      color: "#000000",
+    },
+    inputContainer: {
+      height: 55,
+      borderRadius: 10,
+      borderWidth: 2,
+      borderColor: '#D9D9D9',
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 10,
+    },
+    input: {
+      flex: 1,
+      color: "#000000",
+      fontSize: 18,
+    },
+    icon: {
+      width: 24,
+      height: 24,
+      marginLeft: 10,
+    },
+  });
+
+  export default FormField;
