@@ -118,7 +118,7 @@ REST_AUTH = {
     'JWT_AUTH_COOKIE': 'wetrack-auth',
     'JWT_AUTH_REFRESH_COOKIE': 'wetrack-refresh-token',
     'JWT_AUTH_HTTPONLY': False,
-    'LOGOUT_ON_GET': False,c
+    'LOGOUT_ON_GET': False,
 }
 
 # Database
