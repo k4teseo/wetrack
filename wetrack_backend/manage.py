@@ -1,8 +1,20 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 import os
+from pathlib import Path
 import sys
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env file
+env_path = BASE_DIR / '.env'
+if env_path.exists():
+    with env_path.open() as f:
+        for line in f:
+            if line.strip() and not line.startswith('#'):
+                key, value = line.strip().split('=', 1)
+                os.environ[key] = value
 
 def main():
     """Run administrative tasks."""
