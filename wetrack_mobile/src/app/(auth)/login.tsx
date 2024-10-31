@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import FormField from '../../components/FormField';
 import CustomButton from '../../components/CustomButton';
 
@@ -80,6 +80,5 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
     },
 });
-
 
 export default Login;
