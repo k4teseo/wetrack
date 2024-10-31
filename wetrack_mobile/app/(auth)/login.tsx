@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, Button } from 'react-native';
 import FormField from '../../components/FormField';
 import CustomButton from '../../components/CustomButton';
 
-const Login = () => {
+const Login = ({ navigation }) => {
   const [isSubmitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
       username: '',
@@ -22,16 +22,22 @@ const Login = () => {
         <Text>WeTrack</Text>
         <Text>Log In</Text>
         <FormField
-        title="Username"
-        value={form.username}
-        handleChangeText={(e) => setForm({...form, username: e})}
-        otherStyles="mt-7"
+            title="Username"
+            value={form.username}
+            handleChangeText={(e) => setForm({...form, username: e})}
+            otherStyles="mt-7"
         />
+
         <FormField
-        title="Password"
-        value={form.password}
-        handleChangeText={(e) => setForm({...form, password: e})}
-        otherStyles="mt-7"
+            title="Password"
+            value={form.password}
+            handleChangeText={(e) => setForm({...form, password: e})}
+            otherStyles="mt-7"
+        />
+
+        <Button
+            title="Don't have an account? Sign up"
+            onPress={() => navigation.navigate("Signup")}
         />
 
         <CustomButton
@@ -40,6 +46,7 @@ const Login = () => {
         containerStyles="mt-7"
         isLoading={isSubmitting}
         />
+
     </View>
   );
 };
