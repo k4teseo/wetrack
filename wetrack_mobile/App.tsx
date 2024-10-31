@@ -4,7 +4,7 @@ import Signup from "./app/(auth)/signup.tsx";
 
 function App() {
     return(
-        <Login/>
+        <Signup/>
         )
     }
 
