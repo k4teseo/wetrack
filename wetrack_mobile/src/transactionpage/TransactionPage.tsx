@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
-// import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const transactions = [
     {
@@ -9,7 +9,7 @@ const transactions = [
         category: 'Transportation',
         description: 'Tube to class',
         amount: '-£8.74',
-//         icon: 'car',
+        icon: 'car',
         color: '#D9534F',
     },
     {
@@ -18,7 +18,7 @@ const transactions = [
         category: 'Entertainment',
         description: 'Netflix Subscription',
         amount: '-$14.99',
-//         icon: 'tv',
+        icon: 'tv',
         color: '#D9534F',
     },
     {
@@ -27,7 +27,7 @@ const transactions = [
         category: 'Groceries',
         description: 'Groceries week of 10/18',
         amount: '-£33.26',
-//         icon: 'basket',
+        icon: 'basket',
         color: '#D9534F',
     },
     {
@@ -36,7 +36,7 @@ const transactions = [
         category: 'Transportation',
         description: 'Tube to museum',
         amount: '-£5.42',
-//         icon: 'car',
+        icon: 'car',
         color: '#D9534F',
     },
     {
@@ -45,7 +45,7 @@ const transactions = [
         category: 'Entertainment',
         description: 'Spotify premium',
         amount: '-$20.99',
-//         icon: 'musical-notes',
+        icon: 'musical-notes',
         color: '#D9534F',
     },
     {
@@ -54,13 +54,14 @@ const transactions = [
         category: 'Transportation',
         description: 'Uber to airport',
         amount: '-€7.42',
-//         icon: 'car',
+        icon: 'car',
         color: '#D9534F',
     },
 ];
 
 const TransactionItem = ({ item }) => (
     <View style={styles.transactionItem}>
+        <Icon name={item.icon} size={30} color="#6c757d" style={styles.icon} />
         <View style={styles.transactionDetails}>
             <Text style={styles.category}>{item.category}</Text>
             <Text style={styles.description}>{item.description}</Text>
