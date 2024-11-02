@@ -1,4 +1,4 @@
-import React from "react";
+/* import React from "react";
 import {
     View,
     StyleSheet,
@@ -15,9 +15,10 @@ const help = require("");
 const logout = require("");
 const notification = require("");
 const setting = require("");
-
+*/
 const Profile = () => {
     return (
+        /*
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.topSection}>
@@ -80,12 +81,14 @@ const Profile = () => {
 
                 </View>
             </SafeAreaView>
-        </View>
+        </View> */
+        <Text>Profile</Text>
     );
 };
 
 export default Profile;
 
+/*
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -155,4 +158,4 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: '#FFFFFF45'
     }
-});
+}); */

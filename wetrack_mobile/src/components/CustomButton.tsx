@@ -1,4 +1,5 @@
-import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
+import React from 'react';
+import { ActivityIndicator, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 const CustomButton = ({
   title,
@@ -11,12 +12,10 @@ const CustomButton = ({
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.7}
-      className={`bg-secondary rounded-xl min-h-[62px] flex flex-row justify-center items-center ${containerStyles} ${
-        isLoading ? "opacity-50" : ""
-      }`}
+      style={[styles.button, containerStyles, isLoading && styles.disabled]}
       disabled={isLoading}
     >
-      <Text className={`text-primary font-psemibold text-lg ${textStyles}`}>
+      <Text style={[styles.text, textStyles]}>
         {title}
       </Text>
 
@@ -25,11 +24,34 @@ const CustomButton = ({
           animating={isLoading}
           color="#fff"
           size="small"
-          className="ml-2"
+          style={styles.loadingIndicator}
         />
       )}
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: '#E2F5FE', // Background color
+    borderRadius: 10, // No border radius for rectangular shape
+    minHeight: 55,
+    marginTop: 35,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: '#00000',
+    fontWeight: '600',
+    fontSize: 18,
+  },
+  loadingIndicator: {
+    marginLeft: 10,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+});
 
 export default CustomButton;
