@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from "react-native";
 
-import { eye, eyeHide } from "../constants/icons.tsx";
+const eye = require("../assets/icons/Eye.png");
+const eyeHide = require("../assets/icons/EyeSlash.png");
 
 const FormField = ({
   title,
