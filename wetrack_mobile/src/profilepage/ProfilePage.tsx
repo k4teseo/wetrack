@@ -1,4 +1,4 @@
-/* import React from "react";
+import React from "react";
 import {
     View,
     StyleSheet,
@@ -9,24 +9,22 @@ import {
     SafeAreaView,
 } from "react-native";
 
-const profile_picture = require("");
-const account = require("");
-const help = require("");
-const logout = require("");
-const notification = require("");
-const setting = require("");
-*/
-const Profile = () => {
+const profile_picture = require("../assets/icons/propic.jpg");
+const account = require("../assets/icons/account.png");
+const help = require("../assets/icons/info.jpeg");
+const logout = require("../assets/icons/logout.jpeg");
+const notification = require("../assets/icons/notification.jpeg");
+const setting = require("../assets/icons/settings.png");
+
+const ProfilePage = () => {
     return (
-        /*
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.topSection}>
                     <View style={styles.propicArea}>
                         <Image source={profile_picture} style={styles.propic} />
                     </View>
-                    <Text style={styles.name}></Text>
-                    <Text style={styles.membership}></Text>
+                    <Text style={styles.name}>Talal Arif Shaikh</Text>
                 </View>
 
                 <View style={styles.buttonList}>
@@ -81,24 +79,22 @@ const Profile = () => {
 
                 </View>
             </SafeAreaView>
-        </View> */
-        <Text>Profile</Text>
+        </View>
     );
 };
 
-export default Profile;
+export default ProfilePage;
 
-/*
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'black',
+        backgroundColor: 'white',
     },
     safeArea: {
-        flex: 1,
+        flex: 20, // empty area left for the top of the screen
     },
     topSection: {
-        height: 300,
+        height: 350,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -106,8 +102,8 @@ const styles = StyleSheet.create({
         width: 170,
         height: 170,
         borderRadius: '100%',
-        borderWidth: 4,
-        borderColor: '#FFBB3B'
+        borderWidth: 10,
+        borderColor: '#E2F5FE'
     },
     propic: {
         width: '100%',
@@ -115,19 +111,15 @@ const styles = StyleSheet.create({
     },
     name: {
         marginTop: 20,
-        color: 'white',
+        color: 'black',
         fontSize: 32,
-    },
-    membership: {
-        color: '#FFBB3B',
-        fontSize: 18,
     },
     buttonList: {
         marginTop: 20,
     },
     buttonSection: {
         paddingTop: 10,
-        paddingBottom: 5,
+        paddingBottom: 10,
         paddingLeft: 25,
         paddingRight: 25,
     },
@@ -149,13 +141,13 @@ const styles = StyleSheet.create({
     buttonName: {
         width: 300,
         fontSize: 20,
-        color: 'white',
+        color: 'black',
         marginLeft: 20,
     },
     sp: {
-        width: 400,
-        marginTop: 10,
-        height: 1,
-        backgroundColor: '#FFFFFF45'
+        width: 350,
+        marginTop: 15,
+        height: 2,
+        backgroundColor: 'lightgrey'
     }
-}); */
+});
