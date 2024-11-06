@@ -14,7 +14,7 @@ const account = require("../../assets/icons/User.png");
 const help = require("../../assets/icons/Info.png");
 const logout = require("../../assets/icons/Logout.png");
 const notification = require("../../assets/icons/Notification.png");
-const setting = require("../../assets/icons/Settings.png");
+const setting = require("../../assets/icons/settings.png");
 
 const ProfilePage = () => {
     return (
