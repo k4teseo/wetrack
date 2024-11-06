@@ -53,76 +53,72 @@ function CustomTabBarButton({ children, onPress }) {
 
 function App() {
     return(
-        <NavigationContainer>
-            <Stack.Navigator initialRouteName="Login">
-                <Stack.Screen name="Login" component={Login} />
-                <Stack.Screen name="Signup" component={Signup} />
-                <Stack.Screen name="Profile" component={Profile} />
-            </Stack.Navigator>
-        </NavigationContainer>
-        <ProfilePage />
-        <TransactionPage />
-        <NavBar />
 //         <NavigationContainer>
-//                     <Tab.Navigator
-//                         screenOptions={{
-//                             tabBarShowLabel: true,
-//                             tabBarStyle: { height: 80 },
-//                             headerShown: false,
-//                         }}
-//                     >
-//                         <Tab.Screen
-//                             name="Dashboard"
-//                             component={DashboardScreen}
-//                             options={{
-//                                 tabBarIcon: ({ color, size }) => (
-//                                     <Icon name="pie-chart-outline" color={color} size={size} />
-//                                 ),
-//                             }}
-//                         />
-//                         <Tab.Screen
-//                             name="Transactions"
-//                             component={TransactionsScreen}
-//                             options={{
-//                                 tabBarIcon: ({ color, size }) => (
-//                                     <Icon name="cash-outline" color={color} size={size} />
-//                                 ),
-//                             }}
-//                         />
-//                         <Tab.Screen
-//                             name="Add"
-//                             component={AddScreen} // or some "Add Transaction" screen
-//                             options={{
-//                                 tabBarIcon: ({ focused }) => (
-//                                     <Icon name="add" color="#333" size={30} />
-//                                 ),
-//                                 tabBarButton: (props) => (
-//                                     <CustomTabBarButton {...props}>
-//                                         <Icon name="add" color="#333" size={30} />
-//                                     </CustomTabBarButton>
-//                                 ),
-//                             }}
-//                         />
-//                         <Tab.Screen
-//                             name="Budget"
-//                             component={BudgetScreen}
-//                             options={{
-//                                 tabBarIcon: ({ color, size }) => (
-//                                     <Icon name="wallet-outline" color={color} size={size} />
-//                                 ),
-//                             }}
-//                         />
-//                         <Tab.Screen
-//                             name="Profile"
-//                             component={ProfileScreen}
-//                             options={{
-//                                 tabBarIcon: ({ color, size }) => (
-//                                     <Icon name="person-outline" color={color} size={size} />
-//                                 ),
-//                             }}
-//                         />
-//                     </Tab.Navigator>
-//                 </NavigationContainer>
+//             <Stack.Navigator initialRouteName="Login">
+//                 <Stack.Screen name="Login" component={Login} />
+//                 <Stack.Screen name="Signup" component={Signup} />
+//             </Stack.Navigator>
+//         </NavigationContainer>
+        <NavigationContainer>
+            <Tab.Navigator
+                screenOptions={{
+                tabBarShowLabel: true,
+                tabBarStyle: { height: 80 },
+                headerShown: false,
+                        }}
+                    >
+                        <Tab.Screen
+                            name="Dashboard"
+                            component={DashboardScreen}
+                            options={{
+                                tabBarIcon: ({ color, size }) => (
+                                    <Icon name="pie-chart-outline" color={color} size={size} />
+                                ),
+                            }}
+                        />
+                        <Tab.Screen
+                            name="Transactions"
+                            component={TransactionsScreen}
+                            options={{
+                                tabBarIcon: ({ color, size }) => (
+                                    <Icon name="cash-outline" color={color} size={size} />
+                                ),
+                            }}
+                        />
+                        <Tab.Screen
+                            name="Add"
+                            component={AddScreen} // or some "Add Transaction" screen
+                            options={{
+                                tabBarIcon: ({ focused }) => (
+                                    <Icon name="add" color="#333" size={30} />
+                                ),
+                                tabBarButton: (props) => (
+                                    <CustomTabBarButton {...props}>
+                                        <Icon name="add" color="#333" size={30} />
+                                    </CustomTabBarButton>
+                                ),
+                            }}
+                        />
+                        <Tab.Screen
+                            name="Budget"
+                            component={BudgetScreen}
+                            options={{
+                                tabBarIcon: ({ color, size }) => (
+                                    <Icon name="wallet-outline" color={color} size={size} />
+                                ),
+                            }}
+                        />
+                        <Tab.Screen
+                            name="Profile"
+                            component={ProfileScreen}
+                            options={{
+                                tabBarIcon: ({ color, size }) => (
+                                    <Icon name="person-outline" color={color} size={size} />
+                                ),
+                            }}
+                        />
+                    </Tab.Navigator>
+                </NavigationContainer>
     );
 }
 
