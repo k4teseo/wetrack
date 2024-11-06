@@ -79,8 +79,8 @@ function App() {
                             <Image
                                 source={dashboard}
                                 style={{
-                                    width: 40,
-                                    height: 40,
+                                    width: 38,
+                                    height: 38,
                                 }}
                             />
                         ),
@@ -98,8 +98,8 @@ function App() {
                             <Image
                                 source={transactions}
                                 style={{
-                                    width: 40,
-                                    height: 40,
+                                    width: 38,
+                                    height: 38,
                                 }}
                             />
                         ),
@@ -131,8 +131,8 @@ function App() {
                             <Image
                                 source={budget}
                                 style={{
-                                    width: 40,
-                                    height: 40,
+                                    width: 38,
+                                    height: 38,
                                 }}
                             />
                         ),
@@ -150,8 +150,8 @@ function App() {
                             <Image
                                 source={user}
                                 style={{
-                                    width: 40,
-                                    height: 40,
+                                    width: 38,
+                                    height: 38,
                                 }}
                             />
                         ),
