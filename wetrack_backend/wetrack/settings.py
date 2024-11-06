@@ -90,7 +90,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'auth_app.middleware.CustomCsrfMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -118,10 +118,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'wetrack.wsgi.application'
 
 # REST Framework settings
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
     ],
 }
 
@@ -140,14 +143,33 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = None
+JWT_AUTH_REFRESH_COOKIE = None
+
 REST_AUTH = {
     'USER_DETAILS_SERIALIZER': 'auth_app.views.UserSerializer',
     'USE_JWT': True,
-    'JWT_AUTH_COOKIE': 'wetrack-auth',
-    'JWT_AUTH_REFRESH_COOKIE': 'wetrack-refresh-token',
+    'JWT_AUTH_COOKIE': None,
+    'JWT_AUTH_REFRESH_COOKIE': None,
     'JWT_AUTH_HTTPONLY': False,
-    'LOGOUT_ON_GET': False,
+    'SESSION_LOGIN': False,
+    'TOKEN_MODEL': None,
 }
+
+# Add CSRF exempt urls
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:19000',
+    'http://10.0.2.2:8000',
+    'http://localhost:8000',
+]
+
+# Disable CSRF for authentication endpoints
+CSRF_EXEMPT_URLS = [
+    'auth/login/',
+    'auth/registration/',
+    'auth/token/refresh/',
+]
 
 # Database
 DATABASES = {
