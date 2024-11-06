@@ -23,21 +23,40 @@ const Signup = ({ navigation }) => {
     name: "",
   });
 
-  const validateForm = () => {
-    if (!form.username) {
-      Alert.alert('Error', 'Username is required');
-      return false;
-    }
-    if (!form.password1) {
-      Alert.alert('Error', 'Password is required');
-      return false;
-    }
-    if (form.password1 !== form.password2) {
-      Alert.alert('Error', 'Passwords do not match');
-      return false;
-    }
-    return true;
-  };
+   const validateForm = () => {
+     const errors = [];
+
+     if (!form.username) {
+       errors.push('Username is required');
+     }
+     if (!form.email) {
+       errors.push('Email is required');
+     } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+       errors.push('Please enter a valid email address');
+     }
+     if (!form.password1) {
+       errors.push('Password is required');
+     } else if (form.password1.length < 8) {
+       errors.push('Password must be at least 8 characters long');
+     }
+     if (!form.password2) {
+       errors.push('Please confirm your password');
+     }
+     if (form.password1 !== form.password2) {
+       errors.push('Passwords do not match');
+     }
+     // Add password strength validation
+     if (form.password1 && !/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(form.password1)) {
+       errors.push('Password must contain at least one letter and one number');
+     }
+
+     if (errors.length > 0) {
+       Alert.alert('Validation Error', errors.join('\n\n'));
+       return false;
+     }
+
+     return true;
+   };
 
   const submit = async () => {
     if (!validateForm()) return;
@@ -99,7 +118,7 @@ const Signup = ({ navigation }) => {
         />
 
         <FormField
-          title="Email (optional)"
+          title="Email"
           value={form.email}
           handleChangeText={(text) => setForm({...form, email: text})}
           otherStyles="mt-7"
