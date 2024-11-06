@@ -4,16 +4,17 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./app/(auth)/login.tsx";
 import Signup from "./app/(auth)/signup.tsx";
 import { enableScreens } from 'react-native-screens';
-import ProfilePage from './app/pages/ProfilePage.tsx';
+import DashboardPage from './app/pages/DashboardPage.tsx';
 import TransactionPage from './app/pages/TransactionPage.tsx';
+import AddTransactionPage from './app/pages/AddTransactionPage.tsx';
+import BudgetPage from './app/pages/BudgetPage.tsx';
+import ProfilePage from './app/pages/ProfilePage.tsx';
 import dashboard from './assets/icons/Dashboard.png';
 import transactions from './assets/icons/CurrencyCircleDollar.png';
 import add from './assets/icons/Plus.png';
 import budget from './assets/icons/PiggyBank.png';
 import user from './assets/icons/User.png';
 
-// import * as React from 'react';
-// import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { View, TouchableOpacity, StyleSheet, Image, Text } from 'react-native';
@@ -23,16 +24,16 @@ enableScreens();
 const Stack = createNativeStackNavigator();
 
 function DashboardScreen() {
-    return <View />;
+    return <DashboardPage />;
 }
 function TransactionsScreen() {
     return <TransactionPage />;
 }
 function AddScreen() {
-    return <View />;
+    return <AddTransactionPage />;
 }
 function BudgetScreen() {
-    return <View />;
+    return <BudgetPage />;
 }
 function ProfileScreen() {
     return <ProfilePage />;
