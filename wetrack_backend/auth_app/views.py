@@ -20,13 +20,33 @@ def register_user(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserSerializer(serializers.ModelSerializer):
+    password1 = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True)
+
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'email', 'first_name', 'last_name')
+        fields = ('id', 'username', 'email', 'name', 'password1', 'password2')
         extra_kwargs = {
             'email': {'required': False},
-            'username': {'required': True}
+            'username': {'required': True},
+            'name': {'required': False},
         }
+
+    def validate(self, data):
+        if data['password1'] != data['password2']:
+            raise serializers.ValidationError("Passwords don't match")
+        return data
+
+    def create(self, validated_data):
+        # Remove password2 and set password
+        password = validated_data.pop('password1')
+        validated_data.pop('password2')
+
+        user = CustomUser.objects.create_user(
+            password=password,
+            **validated_data
+        )
+        return user
 
 class UserDetailView(generics.RetrieveUpdateAPIView):
     queryset = CustomUser.objects.all()
