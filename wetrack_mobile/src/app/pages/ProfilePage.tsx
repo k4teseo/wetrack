@@ -9,12 +9,12 @@ import {
     SafeAreaView,
 } from "react-native";
 
-const profile_picture = require("../assets/icons/propic.jpg");
-const account = require("../assets/icons/account.png");
-const help = require("../assets/icons/info.jpeg");
-const logout = require("../assets/icons/logout.jpeg");
-const notification = require("../assets/icons/notification.jpeg");
-const setting = require("../assets/icons/settings.png");
+const profile_picture = require("../../assets/icons/propic.jpg");
+const account = require("../../assets/icons/User.png");
+const help = require("../../assets/icons/Info.png");
+const logout = require("../../assets/icons/Logout.png");
+const notification = require("../../assets/icons/Notification.png");
+const setting = require("../../assets/icons/Settings.png");
 
 const ProfilePage = () => {
     return (
@@ -24,7 +24,7 @@ const ProfilePage = () => {
                     <View style={styles.propicArea}>
                         <Image source={profile_picture} style={styles.propic} />
                     </View>
-                    <Text style={styles.name}>Talal Arif Shaikh</Text>
+                    <Text style={styles.name}>Talal Arif Shaikha</Text>
                 </View>
 
                 <View style={styles.buttonList}>

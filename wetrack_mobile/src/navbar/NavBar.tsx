@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import dashboard from '../assets/icons/Dashboard.png';
+import transactions from '../assets/icons/CurrencyCircleDollar.png';
+import budget from '../assets/icons/PiggyBank.png';
 
-// Dummy Screens
 function DashboardScreen() {
     return <View />;
 }
@@ -18,7 +19,6 @@ function ProfileScreen() {
     return <View />;
 }
 
-// Define Tab Navigator
 const Tab = createBottomTabNavigator();
 
 function CustomTabBarButton({ children, onPress }) {
@@ -48,8 +48,8 @@ export default function App() {
                     name="Dashboard"
                     component={DashboardScreen}
                     options={{
-                        tabBarIcon: ({ color, size }) => (
-                            <Icon name="pie-chart-outline" color={color} size={size} />
+                        tabBarIcon: ({  }) => (
+                            <Image source={dashboard} resizeModel="contain" />
                         ),
                     }}
                 />
@@ -57,14 +57,14 @@ export default function App() {
                     name="Transactions"
                     component={TransactionsScreen}
                     options={{
-                        tabBarIcon: ({ color, size }) => (
-                            <Icon name="cash-outline" color={color} size={size} />
+                        tabBarIcon: ({ color, focused }) => (
+                            <Image source={transactions} />
                         ),
                     }}
                 />
                 <Tab.Screen
                     name="Add"
-                    component={TransactionsScreen} // or some "Add Transaction" screen
+                    component={TransactionsScreen}
                     options={{
                         tabBarIcon: ({ focused }) => (
                             <Icon name="add" color="#333" size={30} />
@@ -81,7 +81,7 @@ export default function App() {
                     component={BudgetScreen}
                     options={{
                         tabBarIcon: ({ color, size }) => (
-                            <Icon name="wallet-outline" color={color} size={size} />
+                            <Image source={budget} />
                         ),
                     }}
                 />
