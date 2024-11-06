@@ -68,7 +68,7 @@ function App() {
             <Tab.Navigator
                 screenOptions={{
                     tabBarShowLabel: true,
-                    tabBarStyle: { height: 80 },
+                    tabBarStyle: { height: 78 },
                     headerShown: false,
                 }}
             >
