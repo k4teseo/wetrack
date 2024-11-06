@@ -19,6 +19,9 @@ const AUTH_ENDPOINTS = {
 class AuthService {
   static async register(userData) {
     try {
+//      console.log('Making registration request to:', `${API_URL}${AUTH_ENDPOINTS.REGISTER}`);
+//      console.log('With data:', userData);
+
       const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.REGISTER}`, {
         method: 'POST',
         headers: {
@@ -27,7 +30,9 @@ class AuthService {
         body: JSON.stringify(userData),
       });
 
+//      console.log('Response status:', response.status);
       const data = await response.json();
+//      console.log('Response data:', data);
 
       if (!response.ok) {
         throw new Error(data.detail || 'Registration failed');
