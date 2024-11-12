@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import FormField from '../../components/FormField';
 import CustomButton from '../../components/CustomButton';
 import AuthService from '../../services/authService';
+import Signup from './signup.tsx';
 
 const Login = ({ navigation }) => {
   const [isSubmitting, setSubmitting] = useState(false);
@@ -73,11 +74,11 @@ const Login = ({ navigation }) => {
       />
 
       <TouchableOpacity
-        style={styles.signupButton}
-        onPress={() => navigation.navigate("Signup")}
-        disabled={isSubmitting}
+          style={styles.signupButton}
+          onPress={() => navigation.navigate("Signup")}
+          disabled={isSubmitting}
       >
-        <Text style={styles.signupText}>Don't have an account? Sign up</Text>
+          <Text style={styles.signupText}>Don't have an account? Sign up</Text>
       </TouchableOpacity>
     </View>
   );
