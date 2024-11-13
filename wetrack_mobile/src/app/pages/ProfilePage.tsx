@@ -11,11 +11,9 @@ import {
 
 
 const profile_picture = require("../../assets/icons/propic.jpg");
-const account = require("../../assets/icons/User.png");
-const help = require("../../assets/icons/Info.png");
+const currency = require("../../assets/icons/CurrencyCircleDollar.png");
+const moon = require("../../assets/icons/Moon.png");
 const logout = require("../../assets/icons/Logout.png");
-const notification = require("../../assets/icons/Notification.png");
-const setting = require("../../assets/icons/Settings.png");
 
 const ProfilePage = () => {
     return (
@@ -33,39 +31,20 @@ const ProfilePage = () => {
                         <TouchableOpacity style={styles.buttonSection} activeOpacity={0.9}>
                             <View style={styles.buttonArea}>
                                 <View style={styles.iconArea}>
-                                    <Image source={account} style={styles.iconStyle} resizeMode="contain" />
+                                    <Image source={currency} style={styles.iconStyle} resizeMode="contain" />
                                 </View>
-                                <Text style={styles.buttonName}>Account</Text>
+                                <Text style={styles.buttonName}>Change Base Currency</Text>
                             </View>
                             <View style={styles.sp}></View>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.buttonSection} activeOpacity={0.9}>
-                            <View style={styles.buttonArea}>
-                                <View style={styles.iconArea}>
-                                    <Image source={notification} style={styles.iconStyle} resizeMode="contain" />
-                                </View>
-                                <Text style={styles.buttonName}>Notifications</Text>
-                            </View>
-                            <View style={styles.sp}></View>
-                        </TouchableOpacity>
 
                         <TouchableOpacity style={styles.buttonSection} activeOpacity={0.9}>
                             <View style={styles.buttonArea}>
                                 <View style={styles.iconArea}>
-                                    <Image source={setting} style={styles.iconStyle} resizeMode="contain" />
+                                    <Image source={moon} style={styles.iconStyle} resizeMode="contain" />
                                 </View>
-                                <Text style={styles.buttonName}>Settings</Text>
-                            </View>
-                            <View style={styles.sp}></View>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.buttonSection} activeOpacity={0.9}>
-                            <View style={styles.buttonArea}>
-                                <View style={styles.iconArea}>
-                                    <Image source={help} style={styles.iconStyle} resizeMode="contain" />
-                                </View>
-                                <Text style={styles.buttonName}>Help</Text>
+                                <Text style={styles.buttonName}>Dark Mode</Text>
                             </View>
                             <View style={styles.sp}></View>
                         </TouchableOpacity>
