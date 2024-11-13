@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
+const pencil = require("../../assets/icons/PencilLine.png");
+const backspace = require("../../assets/icons/Backspace.png");
+const dropdown = require("../../assets/icons/DropDown.png");
+import DateSelector from "../../components/DateSelector.tsx";
 
 const categories = [
     { id: '1', name: 'Transportation', icon: 'car' },
@@ -28,8 +31,7 @@ const AddTransaction = () => {
         <View style={styles.container}>
             {/* Date Section */}
             <View style={styles.dateContainer}>
-                <Text style={styles.dateText}>{date}</Text>
-                <Icon name="calendar-outline" size={20} color="#000" />
+                <DateSelector/>
             </View>
 
             {/* Amount Section */}
@@ -44,7 +46,7 @@ const AddTransaction = () => {
             <Text style={styles.label}>Category</Text>
             <View style={styles.categoryContainer}>
                 <Text style={styles.category}>{category}</Text>
-                <Icon name="chevron-down-outline" size={20} color="#000" />
+                <Image source={dropdown} />
             </View>
 
             {/* Description Section */}
@@ -53,7 +55,7 @@ const AddTransaction = () => {
 
             {/* Numeric Keypad */}
             <FlatList
-                data={['1', '2', '3', '4', '5', '6', '7', '8', '9', 'delete', '0', 'confirm']}
+                data={['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'delete', 'confirm']}
                 numColumns={3}
                 keyExtractor={(item) => item}
                 renderItem={({ item }) => (
@@ -62,9 +64,9 @@ const AddTransaction = () => {
                         onPress={() => handleKeyPress(item)}
                     >
                         {item === 'delete' ? (
-                            <Icon name="backspace-outline" size={24} color="#000" />
+                            <Image source={backspace} />
                         ) : item === 'confirm' ? (
-                            <Icon name="checkmark-circle-outline" size={24} color="#4CAF50" />
+                            <Image source={backspace} />
                         ) : (
                             <Text style={styles.keyText}>{item}</Text>
                         )}
@@ -87,6 +89,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 20,
+    },
+    images: {
+        width: 23,
+        height: 23,
     },
     dateText: {
         fontSize: 18,
