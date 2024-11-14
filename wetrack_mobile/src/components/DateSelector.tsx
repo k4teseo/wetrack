@@ -30,6 +30,7 @@ const DateSelector = () => {
                 modal={true}
                 open={showDatePicker}
                 date={selectedDate}
+                maximumDate={new Date()}
                 mode='date'
                 onConfirm={(date) => {
                     console.log(date);
