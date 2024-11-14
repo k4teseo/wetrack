@@ -12,9 +12,7 @@ import transactions from '../assets/icons/CurrencyCircleDollar.png';
 import add from '../assets/icons/Plus.png';
 import budget from '../assets/icons/PiggyBank.png';
 import user from '../assets/icons/User.png';
-
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/Ionicons';
 import { TouchableOpacity, StyleSheet, Image, View } from 'react-native';
 
 enableScreens();
@@ -164,8 +162,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     customButton: {
-        width: 80,
-        height: 80,
+        width: 77,
+        height: 77,
         borderRadius: 50,
         backgroundColor: '#e0f0ff',
         justifyContent: 'center',
