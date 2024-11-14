@@ -27,7 +27,7 @@ const Login = ({ navigation }) => {
     await AsyncStorage.setItem('user', JSON.stringify(response.user));
 
     // Navigate to Profile screen
-    navigation.replace('Profile');
+    navigation.navigate('MainApp');
   } catch (error) {
     console.error('Login error:', error);
     let errorMessage = 'Login failed';
