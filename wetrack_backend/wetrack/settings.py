@@ -25,7 +25,7 @@ else:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -57,12 +57,40 @@ INSTALLED_APPS = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:19000",
+    "http://10.0.2.2:8000",
+    "http://127.0.0.1:8000",
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'auth_app.middleware.CustomCsrfMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -90,10 +118,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'wetrack.wsgi.application'
 
 # REST Framework settings
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
     ],
 }
 
@@ -112,14 +143,33 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = None
+JWT_AUTH_REFRESH_COOKIE = None
+
 REST_AUTH = {
     'USER_DETAILS_SERIALIZER': 'auth_app.views.UserSerializer',
     'USE_JWT': True,
-    'JWT_AUTH_COOKIE': 'wetrack-auth',
-    'JWT_AUTH_REFRESH_COOKIE': 'wetrack-refresh-token',
+    'JWT_AUTH_COOKIE': None,
+    'JWT_AUTH_REFRESH_COOKIE': None,
     'JWT_AUTH_HTTPONLY': False,
-    'LOGOUT_ON_GET': False,
+    'SESSION_LOGIN': False,
+    'TOKEN_MODEL': None,
 }
+
+# Add CSRF exempt urls
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:19000',
+    'http://10.0.2.2:8000',
+    'http://localhost:8000',
+]
+
+# Disable CSRF for authentication endpoints
+CSRF_EXEMPT_URLS = [
+    'auth/login/',
+    'auth/registration/',
+    'auth/token/refresh/',
+]
 
 # Database
 DATABASES = {
