@@ -143,35 +143,6 @@ const ProfilePage = () => {
                         <View style={styles.sp}></View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.buttonSection} activeOpacity={0.9}>
-                        <View style={styles.buttonArea}>
-                            <View style={styles.iconArea}>
-                                <Image source={notification} style={styles.iconStyle} resizeMode="contain" />
-                            </View>
-                            <Text style={styles.buttonName}>Notifications</Text>
-                        </View>
-                        <View style={styles.sp}></View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.buttonSection} activeOpacity={0.9}>
-                        <View style={styles.buttonArea}>
-                            <View style={styles.iconArea}>
-                                <Image source={setting} style={styles.iconStyle} resizeMode="contain" />
-                            </View>
-                            <Text style={styles.buttonName}>Settings</Text>
-                        </View>
-                        <View style={styles.sp}></View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.buttonSection} activeOpacity={0.9}>
-                        <View style={styles.buttonArea}>
-                            <View style={styles.iconArea}>
-                                <Image source={help} style={styles.iconStyle} resizeMode="contain" />
-                            </View>
-                            <Text style={styles.buttonName}>Help</Text>
-                        </View>
-                        <View style={styles.sp}></View>
-                    </TouchableOpacity>
 
                     <TouchableOpacity
                         style={styles.buttonSection}
