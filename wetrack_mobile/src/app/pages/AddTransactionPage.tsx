@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, TextInput } 
 const backspace = require("../../assets/icons/Backspace.png");
 const dropdown = require("../../assets/icons/DropDown.png");
 const check = require("../../assets/icons/CheckCircle.png");
-const pencil = require("../../assets/icons/PencilLine.png");
+const pencil = require("../../assets/icons/NotePencil.png");
 import DateSelector from "../../components/DateSelector.tsx";
 
 const categories = [
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 8,
-        marginBottom: 12,
+        marginBottom: 7,
     },
     category: {
         fontSize: 20,
