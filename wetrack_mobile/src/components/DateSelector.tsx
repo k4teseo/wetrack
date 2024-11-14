@@ -20,6 +20,7 @@ const DateSelector = () => {
             <TouchableOpacity onPress={handleToggleInput}>
                 <TextInput style={styles.input}
                     placeholder={formattedDate}
+                    placeholderTextColor="#000000"
                     editable={false}
                     value={selectedDate}
                 />
@@ -47,8 +48,7 @@ const DateSelector = () => {
 
 const styles = StyleSheet.create({
     input: {
-        color: "#000000",
-        fontSize: 23,
+        fontSize: 25,
     }
 })
 
