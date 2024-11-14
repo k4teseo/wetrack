@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     images: {
         width: 23,
         height: 23,
-        marginHorizontal: 8,
+        marginLeft: 8,
     },
     dateText: {
         fontSize: 18,
