@@ -15,11 +15,19 @@ const AddTransaction = () => {
 
     const handleKeyPress = (key) => {
         if (key === 'delete') {
-            setAmount(amount.slice(0, -1) || "0.00");
+            setAmount(prevAmount => {
+                const amountInCents = Math.floor(parseFloat(prevAmount) * 100);
+                const newAmount = Math.floor(amountInCents / 10) / 100;
+                return newAmount.toFixed(2);
+            });
         } else if (key === 'confirm') {
             console.log("Transaction saved:", { transactionDate, amount, category, description });
-        } else {
-            setAmount(prev => (prev === "0.00" ? key : prev + key));
+        } else if (!isNaN(key)) {
+            setAmount(prevAmount => {
+                const amountInCents = Math.floor(parseFloat(prevAmount) * 100);
+                const newAmountInCents = amountInCents * 10 + parseInt(key);
+                return (newAmountInCents / 100).toFixed(2);
+            });
         }
     };
 
