@@ -1,39 +1,65 @@
 import React, { useState, useCallback } from 'react';
-import { View, SafeAreaView, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet } from 'react-native';
 import MonthPicker from 'react-native-month-year-picker';
+const dropdown = require("../assets/icons/DropDown.png");
 
 const App = () => {
-  const [date, setDate] = useState(new Date());
-  const [show, setShow] = useState(false);
+    const [month, setMonth] = useState(new Date());
+    const [show, setShow] = useState(false);
 
-  const showPicker = useCallback((value) => setShow(value), []);
+    const showPicker = useCallback((value) => setShow(value), []);
 
-  const onValueChange = useCallback(
-    (event, newDate) => {
-      const selectedDate = newDate || date;
+    const onValueChange = useCallback(
+        (event, newMonth) => {
+        const selectedMonth = newMonth || month;
 
-      showPicker(false);
-      setDate(selectedDate);
-    },
-    [date, showPicker],
-  );
+        showPicker(false);
+        setMonth(selectedMonth);
+        },
+        [month, showPicker],
+    );
 
-  return (
-    <SafeAreaView>
-      <Text>Month Year Picker Example</Text>
+    const formattedMonth = month.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+    });
 
-      <TouchableOpacity onPress={() => showPicker(true)}>
-        <Text>OPEN</Text>
-      </TouchableOpacity>
-      {show && (
-        <MonthPicker
-          onChange={onValueChange}
-          value={date}
-          maximumDate={new Date()}
-        />
-      )}
-    </SafeAreaView>
-  );
+    return (
+        <View>
+        <TouchableOpacity style={styles.container} onPress={() => showPicker(true)}>
+            <TextInput
+                style={styles.input}
+                placeholder={formattedMonth}
+                placeholderTextColor="#000000"
+                editable={false}
+                value={month}
+            />
+            <Image source={dropdown} style={styles.image}/>
+        </TouchableOpacity>
+
+        {show && (
+            <MonthPicker
+            onChange={onValueChange}
+            value={month}
+            maximumDate={new Date()}
+            />
+        )}
+        </View>
+    );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    input: {
+        fontSize: 20,
+    },
+    image: {
+        width: 22,
+        height: 22,
+    }
+})
 
 export default App;
