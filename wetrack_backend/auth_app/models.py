@@ -34,6 +34,7 @@ class CustomUser(AbstractUser):
         },
     )
     email = models.EmailField(_('email address'), blank=True)
+    name = models.CharField(_('name'), max_length=150, blank=True)  # Added name field
 
     groups = models.ManyToManyField(
         'auth.Group',
