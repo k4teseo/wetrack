@@ -5,12 +5,7 @@ const dropdown = require("../../assets/icons/DropDown.png");
 const check = require("../../assets/icons/CheckCircle.png");
 const pencil = require("../../assets/icons/NotePencil.png");
 import DateSelector from "../../components/DateSelector.tsx";
-
-const categories = [
-    { id: '1', name: 'Transportation' },
-    { id: '2', name: 'Entertainment' },
-    { id: '3', name: 'Groceries' },
-];
+import CategorySelect from "../../components/CategorySelect.tsx";
 
 const AddTransaction = () => {
     const [transactionDate, setTransactionDate] = useState("");
@@ -47,15 +42,14 @@ const AddTransaction = () => {
             {/* Category Section */}
             <Text style={styles.label}>Category</Text>
             <View style={styles.categoryContainer}>
-                <Text style={styles.category}>{category}</Text>
-                <Image source={dropdown} style={styles.images}/>
+                <CategorySelect/>
             </View>
 
             {/* Description Section */}
             <Text style={styles.label}>Description</Text>
             <TextInput
                 style={styles.description}
-                placeholderTextColor="#777"
+                placeholderTextColor="#000000"
                 placeholder={"What was this for?"}
                 value={description}
                 onChangeText={(text) => setDescription(text)}
@@ -134,7 +128,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 8,
-        marginBottom: 7,
+
     },
     category: {
         fontSize: 20,
@@ -143,6 +137,7 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 20,
         paddingLeft: 0,
+        marginBottom: 2,
     },
     key: {
         width: '30%',
