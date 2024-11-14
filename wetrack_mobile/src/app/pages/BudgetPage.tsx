@@ -23,12 +23,14 @@ const BudgetPage = () => {
                 <MonthSelector />
             </View>
 
-            <View style={styles.goalContainer}>
-                <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-                    <Text style={styles.goalText}>Spending Goal</Text>
-                    <Image source={pencil} style={styles.image} />
+            <View style={styles.limitContainer}>
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <View style={styles.button}>
+                        <Text style={styles.spendingLimit}>Spending Goal</Text>
+                        <Image source={pencil} style={styles.image} />
+                    </View>
+                    <Text style={styles.amountText}>${formattedBudget}</Text>
                 </TouchableOpacity>
-                <Text style={styles.amountText}>${formattedBudget}</Text>
             </View>
 
             {/* Modal for entering budget */}
@@ -71,7 +73,7 @@ const styles = StyleSheet.create({
         marginTop: 50,
         marginBottom: 50,
     },
-    goalContainer: {
+    limitContainer: {
         alignItems: 'center',
     },
     button: {
@@ -83,13 +85,14 @@ const styles = StyleSheet.create({
         height: 22,
         marginLeft: 8,
     },
-    goalText: {
+    spendingLimit: {
         fontSize: 22,
         color: '#6E6B65',
     },
     amountText: {
         fontSize: 40,
-        color: '#000',
+        color: '#000000',
+        textAlign: 'center',
     },
     modalOverlay: {
         flex: 1,
