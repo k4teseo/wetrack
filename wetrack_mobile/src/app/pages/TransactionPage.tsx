@@ -1,4 +1,3 @@
-// src/app/pages/TransactionPage.tsx
 import React, { useEffect, useState } from 'react';
 import {
     View,
@@ -6,7 +5,9 @@ import {
     FlatList,
     StyleSheet,
     RefreshControl,
-    ActivityIndicator
+    ActivityIndicator,
+    TouchableOpacity,
+    TextInput,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTransactions } from '../../context/TransactionContext';
@@ -26,22 +27,46 @@ const TransactionItem = ({ item }) => {
 
     return (
         <View style={styles.transactionItem}>
-            <Icon
-                name={getIconName(item.category)}
-                size={30}
-                color="#6c757d"
-                style={styles.icon}
-            />
+            <Icon name={getIconName(item.category)} size={30} color="#6c757d" style={styles.icon} />
             <View style={styles.transactionDetails}>
                 <Text style={styles.category}>{item.category_display}</Text>
                 <Text style={styles.description}>{item.description}</Text>
             </View>
-            <Text style={[
-                styles.amount,
-                { color: parseFloat(item.amount) < 0 ? '#D9534F' : '#5CB85C' }
-            ]}>
+            <Text style={[styles.amount, { color: parseFloat(item.amount) < 0 ? '#D9534F' : '#5CB85C' }]}>
                 {item.currency} {Math.abs(item.amount).toFixed(2)}
             </Text>
+        </View>
+    );
+};
+
+const DateSection = ({ date, transactions, isExpanded, onToggle }) => {
+    const totalAmount = transactions.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+    return (
+        <View style={styles.dateSection}>
+            <TouchableOpacity
+                style={styles.dateSectionHeader}
+                onPress={onToggle}
+            >
+                <View style={styles.dateHeaderLeft}>
+                    <Icon
+                        name={isExpanded ? 'chevron-down' : 'chevron-forward'}
+                        size={20}
+                        color="#6c757d"
+                    />
+                    <Text style={styles.date}>{date}</Text>
+                </View>
+                <Text style={[styles.totalAmount, { color: totalAmount < 0 ? '#D9534F' : '#5CB85C' }]}>
+                    {transactions[0].currency} {Math.abs(totalAmount).toFixed(2)}
+                </Text>
+            </TouchableOpacity>
+
+            {isExpanded && transactions.map((transaction) => (
+                <TransactionItem
+                    key={transaction.id}
+                    item={transaction}
+                />
+            ))}
         </View>
     );
 };
@@ -49,12 +74,52 @@ const TransactionItem = ({ item }) => {
 const TransactionPage = () => {
     const { transactions, isLoading, error, fetchTransactions } = useTransactions();
     const [refreshing, setRefreshing] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [expandedDates, setExpandedDates] = useState(new Set());
+
+    // Initialize with filtered transactions
+    const getFilteredAndSortedTransactions = () => {
+        let filtered = [...transactions];
+
+        // Apply search filter if there's a query
+        if (searchQuery.trim() !== '') {
+            filtered = filtered.filter(transaction =>
+                transaction.description.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        // Sort by date (newest first)
+        filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        return filtered;
+    };
+
+    // Group transactions by date
+    const getGroupedTransactions = (filteredTransactions) => {
+        return filteredTransactions.reduce((acc, transaction) => {
+            const date = new Date(transaction.date).toLocaleDateString();
+            if (!acc[date]) {
+                acc[date] = [];
+            }
+            acc[date].push(transaction);
+            return acc;
+        }, {});
+    };
 
     useEffect(() => {
-        fetchTransactions();
+        loadTransactions();
     }, []);
 
-    console.log('Current transactions:', transactions);
+    // Set initial expanded state for the first date
+    useEffect(() => {
+        const filtered = getFilteredAndSortedTransactions();
+        const grouped = getGroupedTransactions(filtered);
+        const dates = Object.keys(grouped);
+
+        if (dates.length > 0 && !expandedDates.has(dates[0])) {
+            setExpandedDates(new Set([dates[0]]));
+        }
+    }, [transactions]); // Only run when transactions change
 
     const loadTransactions = async () => {
         const result = await fetchTransactions();
@@ -68,6 +133,18 @@ const TransactionPage = () => {
         await loadTransactions();
         setRefreshing(false);
     }, []);
+
+    const toggleDateExpansion = (date) => {
+        setExpandedDates(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(date)) {
+                newSet.delete(date);
+            } else {
+                newSet.add(date);
+            }
+            return newSet;
+        });
+    };
 
     if (isLoading && !refreshing) {
         return (
@@ -85,19 +162,9 @@ const TransactionPage = () => {
         );
     }
 
-    // Group transactions by date
-    const groupedTransactions = transactions?.reduce((acc, transaction) => {
-        const date = new Date(transaction.date).toLocaleDateString();
-        if (!acc[date]) {
-            acc[date] = [];
-        }
-        acc[date].push(transaction);
-        return acc;
-    }, {}) || {};
-
-    const sortedDates = Object.keys(groupedTransactions).sort((a, b) =>
-        new Date(b) - new Date(a)
-    );
+    const filteredTransactions = getFilteredAndSortedTransactions();
+    const groupedTransactions = getGroupedTransactions(filteredTransactions);
+    const sortedDates = Object.keys(groupedTransactions);
 
     return (
         <View style={styles.container}>
@@ -108,31 +175,37 @@ const TransactionPage = () => {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        colors={['#0000ff']}
                     />
                 }
-                renderItem={({ item: date }) => (
-                    <View>
-                        <Text style={styles.date}>{date}</Text>
-                        {groupedTransactions[date].map((transaction) => (
-                            <TransactionItem
-                                key={transaction.id}
-                                item={transaction}
-                            />
-                        ))}
-                    </View>
-                )}
                 ListHeaderComponent={
                     <View style={styles.headerContainer}>
                         <Text style={styles.header}>Transactions</Text>
+                        <View style={styles.searchContainer}>
+                            <Icon name="search" size={20} color="#6c757d" style={styles.searchIcon} />
+                            <TextInput
+                                style={styles.searchInput}
+                                placeholder="Search descriptions..."
+                                value={searchQuery}
+                                onChangeText={setSearchQuery}
+                                clearButtonMode="while-editing"
+                            />
+                        </View>
                     </View>
                 }
+                renderItem={({ item: date }) => (
+                    <DateSection
+                        date={date}
+                        transactions={groupedTransactions[date]}
+                        isExpanded={expandedDates.has(date)}
+                        onToggle={() => toggleDateExpansion(date)}
+                    />
+                )}
+                ListFooterComponent={<View style={styles.footerSpace} />}
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>No transactions yet</Text>
+                        <Text style={styles.emptyText}>No transactions found</Text>
                     </View>
                 }
-                ListFooterComponent={<View style={styles.footerSpace} />}
             />
         </View>
     );
@@ -147,7 +220,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff',
     },
     headerContainer: {
         padding: 16,
@@ -155,17 +227,52 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#f0f0f0',
     },
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f5f5f5',
+        borderRadius: 8,
+        marginTop: 12,
+        paddingHorizontal: 12,
+    },
+    searchIcon: {
+        marginRight: 8,
+    },
+    searchInput: {
+        flex: 1,
+        paddingVertical: 8,
+        fontSize: 16,
+    },
     header: {
         fontSize: 24,
         fontWeight: 'bold',
+    },
+    dateSection: {
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0',
+    },
+    dateSectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        backgroundColor: '#f8f9fa',
+    },
+    dateHeaderLeft: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     date: {
         fontSize: 18,
         fontWeight: '600',
         color: '#6c757d',
-        marginTop: 16,
-        marginLeft: 16,
-        marginBottom: 8,
+        marginLeft: 8,
+    },
+    totalAmount: {
+        fontSize: 16,
+        fontWeight: 'bold',
     },
     transactionItem: {
         flexDirection: 'row',
@@ -178,9 +285,6 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginRight: 16,
-        width: 30,
-        height: 30,
-        textAlign: 'center',
     },
     transactionDetails: {
         flex: 1,
@@ -188,35 +292,32 @@ const styles = StyleSheet.create({
     category: {
         fontSize: 16,
         fontWeight: '500',
-        color: '#000',
     },
     description: {
         fontSize: 14,
         color: '#6c757d',
-        marginTop: 2,
     },
     amount: {
         fontSize: 16,
         fontWeight: 'bold',
-        marginLeft: 8,
     },
     footerSpace: {
         height: 80,
-    },
-    emptyContainer: {
-        padding: 20,
-        alignItems: 'center',
-    },
-    emptyText: {
-        fontSize: 16,
-        color: '#6c757d',
-        textAlign: 'center',
     },
     errorText: {
         fontSize: 16,
         color: '#dc3545',
         textAlign: 'center',
         padding: 16,
+    },
+    emptyContainer: {
+        flex: 1,
+        alignItems: 'center',
+        padding: 20,
+    },
+    emptyText: {
+        fontSize: 16,
+        color: '#6c757d',
     },
 });
 
