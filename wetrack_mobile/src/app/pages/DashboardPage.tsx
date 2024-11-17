@@ -1,31 +1,55 @@
 import React, { useState, useEffect } from "react";
 import {
-    View,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    SafeAreaView,
-    Image,
-    Alert,
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  Alert,
+  TextInput,
 } from "react-native";
-import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import AuthService from '../../services/authService';
-import { ProgressChart } from 'react-native-chart-kit';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { Dimensions } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import AuthService from "../../services/authService";
+import { ProgressChart, BarChart } from "react-native-chart-kit";
+import Icon from "react-native-vector-icons/Ionicons";
+import { Dimensions } from "react-native";
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 
-const data = {
-  labels: ["Utilized"],
-  data: [0.554],
+// Data for the Progress Chart
+const progressData = {
+  labels: ["Spent", "Available"],
+  data: [0.7, 0.3],
+};
+
+// Data for the Bar Chart (Spending Breakdown)
+const barChartData = {
+  labels: ["Food", "Transport", "Entertainment", "Bills", "Misc"],
+  datasets: [
+    {
+      data: [400, 200, 150, 300, 100],
+    },
+  ],
+};
+
+const chartConfig = {
+  backgroundGradientFrom: "#ffffff",
+  backgroundGradientTo: "#ffffff",
+  color: (opacity = 1) => `rgba(50, 50, 50, ${opacity})`,
+  labelColor: (opacity = 1) => `rgba(50, 50, 50, ${opacity})`,
+  barPercentage: 0.6,
 };
 
 const DashboardPage = () => {
   const navigation = useNavigation();
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [currencyFrom, setCurrencyFrom] = useState("");
+  const [currencyTo, setCurrencyTo] = useState("");
+  const [amount, setAmount] = useState("");
+  const [convertedAmount, setConvertedAmount] = useState(""); // Added convertedAmount to state
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -34,34 +58,32 @@ const DashboardPage = () => {
         if (!isAuth) {
           navigation.reset({
             index: 0,
-            routes: [{ name: 'Login' }],
+            routes: [{ name: "Login" }],
           });
           return;
         }
 
-        // Try to get cached user data first
-        const cachedUser = await AsyncStorage.getItem('user');
+        const cachedUser = await AsyncStorage.getItem("user");
         if (cachedUser) {
           setUserData(JSON.parse(cachedUser));
         }
 
-        // Fetch fresh user data
         const freshUserData = await AuthService.getUserProfile();
         if (freshUserData) {
           setUserData(freshUserData);
-          await AsyncStorage.setItem('user', JSON.stringify(freshUserData));
+          await AsyncStorage.setItem("user", JSON.stringify(freshUserData));
         }
       } catch (error) {
-        console.error('Error loading user data:', error);
-        if (error.message.includes('token')) {
+        console.error("Error loading user data:", error);
+        if (error.message.includes("token")) {
           navigation.reset({
             index: 0,
-            routes: [{ name: 'Login' }],
+            routes: [{ name: "Login" }],
           });
         } else {
           Alert.alert(
-            'Error',
-            'Failed to load user data. Please try again later.'
+            "Error",
+            "Failed to load user data. Please try again later."
           );
         }
       } finally {
@@ -72,6 +94,16 @@ const DashboardPage = () => {
     loadUserData();
   }, [navigation]);
 
+  const handleConvert = () => {
+    // Placeholder conversion logic; replace with actual conversion logic later
+    if (!amount || !currencyFrom || !currencyTo) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+    const convertedValue = (parseFloat(amount) * 1.2).toFixed(2); // Example: converting with a rate of 1.2
+    setConvertedAmount(convertedValue);
+  };
+
   if (isLoading) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
@@ -81,130 +113,203 @@ const DashboardPage = () => {
   }
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.greetingContainer}>
-          <Text style={styles.greeting}>Hi, {userData?.username || 'User'}!</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.greeting}>
+            Hi, {userData?.username || "Name"}!
+          </Text>
+          <TouchableOpacity style={styles.dateContainer}>
+            <Text style={styles.dateText}>October 2024</Text>
+            <Icon name="chevron-down-outline" size={16} color="#000" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.currencyContainer}>
-          <Text style={styles.currency}>USD</Text>
-          <Icon name="chevron-down-outline" size={16} color="#000" />
-        </TouchableOpacity>
-      </View>
 
-      {/* Spending Summary Card */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Spending Summary</Text>
-        <Text style={styles.cardSubtitle}>October 2024</Text>
-        <View style={styles.expenseInfo}>
-          <Text style={styles.expenseAmount}>Expenses</Text>
-          <Text style={styles.expenseValue}>$1324</Text>
-          <Text style={styles.availableAmount}>Available</Text>
-          <Text style={styles.availableValue}>$676</Text>
+        {/* Currency Conversion */}
+        <View style={[styles.card, styles.currencyConversionCard]}>
+          <Text style={styles.cardTitle}>Currency Conversion</Text>
+          <View style={styles.currencyConversionRow}>
+            <TextInput
+              style={[styles.currencyInput, styles.currencyBox]}
+              placeholder="Amount"
+              value={amount}
+              keyboardType="numeric"
+              onChangeText={setAmount}
+            />
+            <TextInput
+              style={[styles.currencyInput, styles.currencyBox]}
+              placeholder="From Currency (e.g., USD)"
+              value={currencyFrom}
+              onChangeText={setCurrencyFrom}
+            />
+          </View>
+          <View style={styles.currencyConversionRow}>
+            <TextInput
+              style={[styles.currencyInput, styles.currencyBox]}
+              placeholder="Converted Amount"
+              value={convertedAmount}
+              editable={false}
+            />
+            <TextInput
+              style={[styles.currencyInput, styles.currencyBox]}
+              placeholder="To Currency (e.g., EUR)"
+              value={currencyTo}
+              onChangeText={setCurrencyTo}
+            />
+          </View>
+          <TouchableOpacity style={styles.convertButton} onPress={handleConvert}>
+            <Text style={styles.convertButtonText}>Convert</Text>
+          </TouchableOpacity>
         </View>
-      </View>
 
-      {/* Spending Categories Card */}
-      <View style={[styles.card, styles.categoriesCard]}>
-        <Text style={styles.cardTitle}>Spending Categories</Text>
-        <Text style={styles.cardSubtitle}>October 2024</Text>
-      </View>
-    </View>
+        {/* Spending Summary */}
+        <View style={[styles.card, styles.spendingSummaryCard]}>
+          <Text style={styles.cardTitle}>Spending Summary</Text>
+          <Text style={styles.cardSubtitle}>October 2024</Text>
+          <Text style={styles.budgetText}>Budget: $2000</Text>
+          <ProgressChart
+            data={progressData}
+            width={screenWidth - 32}
+            height={120}
+            strokeWidth={10}
+            radius={30}
+            chartConfig={chartConfig}
+            hideLegend={false}
+          />
+          <View style={styles.expenseInfo}>
+            <Text style={styles.expenseAmount}>Spent: $1400</Text>
+            <Text style={styles.availableAmount}>Available: $600</Text>
+          </View>
+        </View>
+
+        {/* Spending Breakdown */}
+        <View style={[styles.card, styles.spendingBreakdownCard]}>
+          <Text style={styles.cardTitle}>Spending Breakdown</Text>
+          <BarChart
+            style={{ marginVertical: 8 }}
+            data={barChartData}
+            width={screenWidth}
+            height={200}
+            chartConfig={chartConfig}
+            verticalLabelRotation={0}
+            fromZero={true}
+            showValuesOnTopOfBars={true}
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     paddingHorizontal: 16,
   },
   loadingContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginVertical: 16,
-  },
-  greetingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
   },
   greeting: {
     fontSize: 24,
-    fontWeight: '600',
-    color: '#666',
+    fontWeight: "600",
+    color: "#666",
   },
-  username: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#000',
+  dateContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  currencyContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  currency: {
+  dateText: {
     fontSize: 16,
+    fontWeight: "500",
+    color: "#000",
     marginRight: 4,
-    fontWeight: '600',
   },
   card: {
-    backgroundColor: '#e3f2fd',
+    backgroundColor: "#ffffff",
     borderRadius: 12,
     padding: 16,
     marginVertical: 8,
-    alignItems: 'center',
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
-  categoriesCard: {
-    backgroundColor: '#e8f5e9',
+  currencyConversionCard: {
+    alignItems: "flex-start",
+    paddingHorizontal: 16,
+  },
+  spendingSummaryCard: {
+    marginVertical: 8,
+  },
+  spendingBreakdownCard: {
+    marginVertical: 8,
+    alignSelf: "stretch",
   },
   cardTitle: {
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: "600",
     marginBottom: 4,
+    color: "#333",
   },
   cardSubtitle: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     marginBottom: 16,
   },
+  budgetText: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginBottom: 8,
+    color: "#333",
+  },
   expenseInfo: {
-    marginTop: 16,
-    alignItems: 'center',
+    marginTop: 8,
+    alignItems: "center",
   },
   expenseAmount: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  expenseValue: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#d32f2f',
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#d32f2f",
   },
   availableAmount: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginTop: 12,
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#388e3c",
+    marginTop: 4,
   },
-  availableValue: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#388e3c',
+  currencyConversionRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginBottom: 12,
+  },
+  currencyInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 8,
+    borderRadius: 6,
+    flex: 1,
+    marginHorizontal: 4,
+  },
+  convertButton: {
+    backgroundColor: "#1c313a",
+    padding: 12,
+    borderRadius: 6,
+    alignItems: "center",
+    width: "100%",
+  },
+  convertButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 
