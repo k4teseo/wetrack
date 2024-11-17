@@ -1,3 +1,4 @@
+// src/app/pages/AddTransactionPage.tsx
 import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
 import { useTransactions } from '../../context/TransactionContext';
@@ -8,9 +9,16 @@ const AddTransactionPage = ({ navigation }) => {
     const { addTransaction } = useTransactions();
     const [transactionDate, setTransactionDate] = useState(new Date());
     const [amount, setAmount] = useState("0.00");
-    const [category, setCategory] = useState("1"); // Default to Transportation
+    const [category, setCategory] = useState("1");
     const [description, setDescription] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const formatDate = (date) => {
+        const d = new Date(date);
+        const tzOffset = d.getTimezoneOffset();
+        const localDate = new Date(d.getTime() - (tzOffset * 60000));
+        return localDate.toISOString().slice(0, 19) + "+00:00";
+    };
 
     const handleKeyPress = (key) => {
         if (key === 'delete') {
@@ -43,55 +51,71 @@ const AddTransactionPage = ({ navigation }) => {
 
         try {
             setIsSubmitting(true);
+            const formattedDate = formatDate(transactionDate);
+
             console.log('Submitting transaction:', {
-                date: transactionDate.toISOString(),
+                date: formattedDate,
                 amount: parseFloat(amount),
                 category,
                 description
             });
 
             const result = await addTransaction({
-                date: transactionDate.toISOString(),
+                date: formattedDate,
                 amount: parseFloat(amount),
                 category,
                 description,
-                currency: 'GBP' // Or let user select
+                currency: 'GBP'
             });
-
-            console.log('Transaction result:', result);
 
             if (result.success) {
                 Alert.alert(
                     "Success",
                     "Transaction added successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate('Transactions')
-                        }
-                    ]
+                    [{ text: "OK", onPress: () => navigation.navigate('Transactions') }]
                 );
             } else {
                 throw new Error(result.error || 'Failed to add transaction');
             }
         } catch (error) {
             console.error('Error adding transaction:', error);
-            Alert.alert(
-                "Error",
-                error.message || "Failed to add transaction"
-            );
+            Alert.alert("Error", error.message || "Failed to add transaction");
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const onDateChange = (date) => {
+        console.log('New date selected:', date);
         setTransactionDate(date);
     };
 
     const onCategoryChange = (selectedCategory) => {
         setCategory(selectedCategory);
     };
+
+    // Numeric keypad data
+    const keypadData = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'delete', '0', 'confirm'];
+
+    const renderKey = ({ item }) => (
+        <TouchableOpacity
+            style={[
+                styles.key,
+                item === 'confirm' && styles.confirmKey,
+                isSubmitting && styles.disabledKey
+            ]}
+            onPress={() => !isSubmitting && handleKeyPress(item)}
+            disabled={isSubmitting}
+        >
+            {item === 'delete' ? (
+                <Image source={require('../../assets/icons/Backspace.png')} />
+            ) : item === 'confirm' ? (
+                <Image source={require('../../assets/icons/CheckCircle.png')} />
+            ) : (
+                <Text style={styles.keyText}>{item}</Text>
+            )}
+        </TouchableOpacity>
+    );
 
     return (
         <View style={styles.container}>
@@ -132,28 +156,11 @@ const AddTransactionPage = ({ navigation }) => {
 
             {/* Numeric Keypad */}
             <FlatList
-                data={['1', '2', '3', '4', '5', '6', '7', '8', '9', 'delete', '0', 'confirm']}
+                data={keypadData}
                 numColumns={3}
                 keyExtractor={(item) => item}
-                renderItem={({ item }) => (
-                    <TouchableOpacity
-                        style={[
-                            styles.key,
-                            item === 'confirm' && styles.confirmKey,
-                            isSubmitting && styles.disabledKey
-                        ]}
-                        onPress={() => !isSubmitting && handleKeyPress(item)}
-                        disabled={isSubmitting}
-                    >
-                        {item === 'delete' ? (
-                            <Image source={require('../../assets/icons/Backspace.png')} />
-                        ) : item === 'confirm' ? (
-                            <Image source={require('../../assets/icons/CheckCircle.png')} />
-                        ) : (
-                            <Text style={styles.keyText}>{item}</Text>
-                        )}
-                    </TouchableOpacity>
-                )}
+                renderItem={renderKey}
+                scrollEnabled={false}
             />
         </View>
     );
