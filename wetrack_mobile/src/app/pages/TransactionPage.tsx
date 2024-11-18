@@ -8,7 +8,9 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     TextInput,
+    Image
 } from 'react-native';
+const search = require('../../assets/icons/Search.png');
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTransactions } from '../../context/TransactionContext';
 
@@ -49,11 +51,6 @@ const DateSection = ({ date, transactions, isExpanded, onToggle }) => {
                 onPress={onToggle}
             >
                 <View style={styles.dateHeaderLeft}>
-                    <Icon
-                        name={isExpanded ? 'chevron-down' : 'chevron-forward'}
-                        size={20}
-                        color="#6c757d"
-                    />
                     <Text style={styles.date}>{date}</Text>
                 </View>
                 <Text style={[styles.totalAmount, { color: totalAmount < 0 ? '#D9534F' : '#5CB85C' }]}>
@@ -97,7 +94,11 @@ const TransactionPage = () => {
     // Group transactions by date
     const getGroupedTransactions = (filteredTransactions) => {
         return filteredTransactions.reduce((acc, transaction) => {
-            const date = new Date(transaction.date).toLocaleDateString();
+            const date = new Date(transaction.date).toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+            });
             if (!acc[date]) {
                 acc[date] = [];
             }
@@ -181,10 +182,10 @@ const TransactionPage = () => {
                     <View style={styles.headerContainer}>
                         <Text style={styles.header}>Transactions</Text>
                         <View style={styles.searchContainer}>
-                            <Icon name="search" size={20} color="#6c757d" style={styles.searchIcon} />
+                            <Image source={search} style={styles.searchIcon} />
                             <TextInput
                                 style={styles.searchInput}
-                                placeholder="Search descriptions..."
+                                placeholder="Search transactions..."
                                 value={searchQuery}
                                 onChangeText={setSearchQuery}
                                 clearButtonMode="while-editing"
@@ -236,7 +237,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
     },
     searchIcon: {
-        marginRight: 8,
+        marginRight: 6,
+        height: 20,
+        width: 20,
     },
     searchInput: {
         flex: 1,
