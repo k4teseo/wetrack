@@ -21,7 +21,7 @@ const BudgetPage = () => {
     // Calculate total spending whenever transactions change
     useEffect(() => {
         calculateMonthlySpending();
-        console.log('Current transactions:', transactions); // Debug log
+        // console.log('Current transactions:', transactions); // Debug log
     }, [transactions, currentMonth]);
 
     const loadBudget = async () => {
