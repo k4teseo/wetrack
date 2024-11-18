@@ -1,7 +1,8 @@
 // src/components/DateSelector.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import DatePicker from 'react-native-date-picker';
+const edit = require("../assets/icons/NotePencil.png");
 
 const DateSelector = ({ selectedDate: propSelectedDate, onDateChange }) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -35,7 +36,7 @@ const DateSelector = ({ selectedDate: propSelectedDate, onDateChange }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <View>
             <TouchableOpacity
                 onPress={handleToggleInput}
                 style={styles.touchable}
@@ -43,6 +44,7 @@ const DateSelector = ({ selectedDate: propSelectedDate, onDateChange }) => {
                 <Text style={styles.dateText}>
                     {formatDate(selectedDate)}
                 </Text>
+                <Image source={edit} style={styles.image}/>
             </TouchableOpacity>
 
             <DatePicker
@@ -56,22 +58,25 @@ const DateSelector = ({ selectedDate: propSelectedDate, onDateChange }) => {
                 androidVariant="nativeAndroid"
                 textColor="#000000"
             />
+
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
     touchable: {
         padding: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     dateText: {
         fontSize: 25,
         color: '#000000',
-
+    },
+    image: {
+        width: 25,
+        height: 25,
+        marginLeft: 8,
     }
 });
 
