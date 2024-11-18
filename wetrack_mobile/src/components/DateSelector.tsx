@@ -27,9 +27,9 @@ const DateSelector = ({ selectedDate: propSelectedDate, onDateChange }) => {
     };
 
     const formatDate = (date) => {
-        return date.toLocaleDateString('en-GB', {
+        return date.toLocaleDateString('en-US', {
             day: 'numeric',
-            month: 'long',
+            month: 'short',
             year: 'numeric'
         });
     };
