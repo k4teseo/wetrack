@@ -3,30 +3,43 @@ import { Text, StyleSheet, View, TextInput, TouchableOpacity, Modal, Button, Ima
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MonthSelector from "../../components/MonthSelector.tsx";
 import { useTransactions } from '../../context/TransactionContext';
+import AuthService from '../../services/authService';
 const pencil = require("../../assets/icons/NotePencil.png");
 
 const BudgetPage = () => {
     const [budget, setBudget] = useState(0);
     const [modalVisible, setModalVisible] = useState(false);
     const [inputValue, setInputValue] = useState(budget.toString());
-    const [currentMonth, setCurrentMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM format
+    const [currentMonth, setCurrentMonth] = useState(new Date().toISOString().slice(0, 7));
     const [totalSpent, setTotalSpent] = useState(0);
+    const [userId, setUserId] = useState(null);
     const { transactions } = useTransactions();
 
-    // Load saved budget when component mounts or month changes
+    // Get user ID when component mounts
     useEffect(() => {
-        loadBudget();
-    }, [currentMonth]);
+        const getUserId = async () => {
+            const user = await AuthService.getCurrentUser();
+            if (user && user.id) {
+                setUserId(user.id);
+            }
+        };
+        getUserId();
+    }, []);
 
-    // Calculate total spending whenever transactions change
+    // Load saved budget when component mounts, month changes, or userId changes
+    useEffect(() => {
+        if (userId) {
+            loadBudget();
+        }
+    }, [currentMonth, userId]);
+
     useEffect(() => {
         calculateMonthlySpending();
-        // console.log('Current transactions:', transactions); // Debug log
     }, [transactions, currentMonth]);
 
     const loadBudget = async () => {
         try {
-            const savedBudget = await AsyncStorage.getItem(`budget_${currentMonth}`);
+            const savedBudget = await AsyncStorage.getItem(`budget_${userId}_${currentMonth}`);
             if (savedBudget !== null) {
                 setBudget(parseFloat(savedBudget));
                 setInputValue(savedBudget);
@@ -37,6 +50,19 @@ const BudgetPage = () => {
         } catch (error) {
             console.error('Error loading budget:', error);
         }
+    };
+
+    const handleSave = async () => {
+        if (!userId) return;
+
+        const formattedValue = parseFloat(inputValue) || 0;
+        setBudget(formattedValue);
+        try {
+            await AsyncStorage.setItem(`budget_${userId}_${currentMonth}`, formattedValue.toString());
+        } catch (error) {
+            console.error('Error saving budget:', error);
+        }
+        setModalVisible(false);
     };
 
     const calculateMonthlySpending = () => {
@@ -63,17 +89,6 @@ const BudgetPage = () => {
 
         console.log('Calculated total:', total);
         setTotalSpent(total);
-    };
-
-    const handleSave = async () => {
-        const formattedValue = parseFloat(inputValue) || 0;
-        setBudget(formattedValue);
-        try {
-            await AsyncStorage.setItem(`budget_${currentMonth}`, formattedValue.toString());
-        } catch (error) {
-            console.error('Error saving budget:', error);
-        }
-        setModalVisible(false);
     };
 
     const handleMonthChange = (month) => {
@@ -122,7 +137,7 @@ const BudgetPage = () => {
                     <View style={styles.summaryItem}>
                         <Text style={styles.summaryLabel}>Remaining</Text>
                         <Text style={[styles.summaryAmount, { color: remainingBudget >= 0 ? '#5CB85C' : '#D9534F' }]}>
-                            ${Math.abs(remainingBudget).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            ${(remainingBudget).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </Text>
                     </View>
                 </View>
