@@ -13,142 +13,128 @@ const AUTH_ENDPOINTS = {
   LOGIN: '/auth/login/',
   LOGOUT: '/auth/logout/',
   USER_ME: '/auth/user/',
-  REFRESH_TOKEN: '/auth/token/refresh/',
 };
 
 class AuthService {
-  static async register(userData) {
+  async login(username, password) {
     try {
-//      console.log('Making registration request to:', `${API_URL}${AUTH_ENDPOINTS.REGISTER}`);
-//      console.log('With data:', userData);
-      const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.REGISTER}`, {
+      const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.LOGIN}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userData),
+        body: JSON.stringify({
+          username,
+          password,
+        }),
       });
 
-//      console.log('Response status:', response.status);
       const data = await response.json();
-//      console.log('Response data:', data);
+      console.log('Raw server response:', data);
 
       if (!response.ok) {
-        throw new Error(data.detail || 'Registration failed');
+        throw { response: { data } };
       }
 
-      // Store tokens if they're included in the response
-      if (data.access_token) {
-        await AsyncStorage.setItem('access_token', data.access_token);
-      }
-      if (data.refresh_token) {
-        await AsyncStorage.setItem('refresh_token', data.refresh_token);
+      // Store both tokens
+      await AsyncStorage.setItem('accessToken', data.access);
+      await AsyncStorage.setItem('refreshToken', data.refresh);
+
+      // Store user data if it's included in the response
+      if (data.user) {
+        const user = {
+          ...data.user,
+          accessToken: data.access,
+          refreshToken: data.refresh
+        };
+        await AsyncStorage.setItem('user', JSON.stringify(user));
+        return { user };
       }
 
-      return data;
+      return {
+        user: {
+          username,
+          accessToken: data.access,
+          refreshToken: data.refresh
+        }
+      };
     } catch (error) {
+      console.error('Login error details:', error);
       throw error;
     }
   }
 
-  static async login(username, password) {
-     try {
-       console.log('Making login request to:', `${API_URL}${AUTH_ENDPOINTS.LOGIN}`);
-       console.log('With credentials:', { username });
-
-       const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.LOGIN}`, {
-         method: 'POST',
-         headers: {
-           'Content-Type': 'application/json',
-         },
-         body: JSON.stringify({
-           username: username,
-           password: password,
-         }),
-       });
-
-       const data = await response.json();
-       console.log('Response status:', response.status);
-       console.log('Response data:', data);
-
-       if (!response.ok) {
-         const error = new Error(data.non_field_errors?.[0] || data.detail || 'Login failed');
-         error.response = { status: response.status, data };
-         throw error;
-       }
-
-       // Store tokens - note the different key names from dj-rest-auth
-       if (data.access) {  // Changed from access_token
-         await AsyncStorage.setItem('access_token', data.access);
-       }
-       if (data.refresh) {  // Changed from refresh_token
-         await AsyncStorage.setItem('refresh_token', data.refresh);
-       }
-
-       // If user data is included in login response
-       if (data.user) {
-         await AsyncStorage.setItem('user', JSON.stringify(data.user));
-         return data;
-       }
-
-       // If not, fetch user profile
-       try {
-         const userProfile = await this.getUserProfile();
-         return {
-           ...data,
-           user: userProfile
-         };
-       } catch (profileError) {
-         console.error('Error fetching user profile:', profileError);
-         return data;
-       }
-     } catch (error) {
-       console.error('Login error:', error);
-       throw error;
-     }
-   }
-
-   static async getUserProfile() {
-     try {
-       const token = await AsyncStorage.getItem('access_token');
-
-       if (!token) {
-         throw new Error('No access token found');
-       }
-
-       console.log('Fetching user profile...');
-       const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.USER_ME}`, {
-         headers: {
-           'Authorization': `Bearer ${token}`,
-           'Content-Type': 'application/json',
-         },
-       });
-
-       console.log('Profile response status:', response.status);
-       const data = await response.json();
-       console.log('Profile data:', data);
-
-       if (!response.ok) {
-         throw new Error(data.detail || 'Failed to fetch user profile');
-       }
-
-       return data;
-     } catch (error) {
-       console.error('Get profile error:', error);
-       throw error;
-     }
-   }
-
-  static async refreshToken() {
+  // Add getUserProfile method
+  async getUserProfile() {
     try {
-      const refreshToken = await AsyncStorage.getItem('refresh_token');
+      const token = await this.getToken();
+      if (!token) {
+        throw new Error('No token found');
+      }
 
+      const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.USER_ME}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch user profile');
+      }
+
+      const userData = await response.json();
+      await AsyncStorage.setItem('user', JSON.stringify(userData));
+      return userData;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      throw error;
+    }
+  }
+
+  // Simplified method to get current user
+  async getCurrentUser() {
+    try {
+      // First try to get from AsyncStorage
+      const userStr = await AsyncStorage.getItem('user');
+      if (userStr) {
+        return JSON.parse(userStr);
+      }
+
+      // If not in storage, fetch from API
+      return await this.getUserProfile();
+    } catch (error) {
+      console.error('Error getting current user:', error);
+      return null;
+    }
+  }
+
+  async getToken() {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      return token;
+    } catch (error) {
+      console.error('Error getting token:', error);
+      return null;
+    }
+  }
+
+  async getRefreshToken() {
+    try {
+      return await AsyncStorage.getItem('refreshToken');
+    } catch (error) {
+      console.error('Error getting refresh token:', error);
+      return null;
+    }
+  }
+
+  async refreshAccessToken() {
+    try {
+      const refreshToken = await this.getRefreshToken();
       if (!refreshToken) {
         throw new Error('No refresh token found');
       }
 
-      console.log('Refreshing token...');
-      const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.REFRESH_TOKEN}`, {
+      const response = await fetch(`${API_URL}/auth/jwt/refresh/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -159,55 +145,37 @@ class AuthService {
       });
 
       const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.detail || 'Token refresh failed');
+        throw new Error('Failed to refresh token');
       }
 
-      await AsyncStorage.setItem('access_token', data.access);
+      await AsyncStorage.setItem('accessToken', data.access);
       return data.access;
     } catch (error) {
       console.error('Token refresh error:', error);
-      // Clear tokens if refresh fails
-      await AsyncStorage.multiRemove(['access_token', 'refresh_token']);
       throw error;
     }
   }
 
-  static async logout() {
+  async logout() {
     try {
-      const token = await AsyncStorage.getItem('access_token');
-
-      if (token) {
-        console.log('Logging out...');
-        await fetch(`${API_URL}${AUTH_ENDPOINTS.LOGOUT}`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-      }
-
-      // Clear stored tokens
-      await AsyncStorage.multiRemove(['access_token', 'refresh_token']);
+      await AsyncStorage.removeItem('accessToken');
+      await AsyncStorage.removeItem('refreshToken');
+      await AsyncStorage.removeItem('user');
     } catch (error) {
       console.error('Logout error:', error);
-      // Still clear tokens even if logout request fails
-      await AsyncStorage.multiRemove(['access_token', 'refresh_token']);
-      throw error;
     }
   }
 
-  // Helper method to check if user is authenticated
-  static async isAuthenticated() {
+  async isAuthenticated() {
     try {
-      const token = await AsyncStorage.getItem('access_token');
-      return !!token;
-    } catch {
+      const token = await this.getToken();
+      return Boolean(token);
+    } catch (error) {
+      console.error('Auth check error:', error);
       return false;
     }
   }
 }
 
-export default AuthService;
+export default new AuthService();

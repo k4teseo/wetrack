@@ -1,82 +1,51 @@
-# models.py
+# tracker/models.py
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
+from decimal import Decimal
 
-class Category(models.Model):
+class Transaction(models.Model):
     CATEGORY_CHOICES = [
-        ('FOOD', 'Food'),
-        ('PURCHASE', 'Purchase'),
-        ('FIXED', 'Fixed Cost'),
-        ('TRAVEL', 'Travel'),
+        ('1', 'Transportation'),
+        ('2', 'Food & Drink'),
+        ('3', 'Entertainment'),
+        ('4', 'Bills & Utilities'),
+        ('5', 'Retail Shopping'),
+        ('6', 'Groceries'),
     ]
 
-    name = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='categories'
-    )
-
-    class Meta:
-        unique_together = ['name', 'user']
-        verbose_name_plural = 'Categories'
-
-    def __str__(self):
-        return f"{self.user.username} - {self.name}"
-
-class FixedCost(models.Model):
-    FREQUENCY_CHOICES = [
-        ('MONTHLY', 'Monthly'),
-        ('WEEKLY', 'Weekly'),
-        ('YEARLY', 'Yearly'),
+    CURRENCY_CHOICES = [
+        ('GBP', 'British Pound'),
+        ('USD', 'US Dollar'),
+        ('EUR', 'Euro'),
     ]
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        settings.AUTH_USER_MODEL,  # Changed from django.contrib.auth.models.User
         on_delete=models.CASCADE,
-        related_name='fixed_costs'
+        related_name='transactions'  # Added for easier querying
     )
-    name = models.CharField(max_length=100)
+    date = models.DateTimeField()
     amount = models.DecimalField(
-        max_digits=10,
+        max_digits=10, 
         decimal_places=2,
-        validators=[MinValueValidator(0)]
+        validators=[MinValueValidator(Decimal('0.01'))]
     )
-    frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES)
-    next_due_date = models.DateField()
-
-    def __str__(self):
-        return f"{self.name} - {self.frequency}"
-
-class Expense(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='expenses'
-    )
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-        related_name='expenses'
-    )
-    amount = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        validators=[MinValueValidator(0)]
+    category = models.CharField(
+        max_length=2,
+        choices=CATEGORY_CHOICES
     )
     description = models.CharField(max_length=200)
-    date = models.DateField(auto_now_add=True)
-    fixed_cost = models.ForeignKey(
-        FixedCost,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='expenses'
+    currency = models.CharField(
+        max_length=3,
+        choices=CURRENCY_CHOICES,
+        default='GBP'
     )
-
-    def __str__(self):
-        return f"{self.user.username} - {self.category.name} - {self.amount}"
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-date']  # Most recent expenses first
+        ordering = ['-date']
+        
+    def __str__(self):
+        return f"{self.user.username} - {self.amount} {self.currency} on {self.date}"
