@@ -9,7 +9,7 @@ const AddTransactionPage = ({ navigation }) => {
     const { addTransaction } = useTransactions();
     const [transactionDate, setTransactionDate] = useState(new Date());
     const [amount, setAmount] = useState("0.00");
-    const [category, setCategory] = useState("1");
+    const [category, setCategory] = useState("");
     const [description, setDescription] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -74,6 +74,9 @@ const AddTransactionPage = ({ navigation }) => {
                     "Transaction added successfully",
                     [{ text: "OK", onPress: () => navigation.navigate('Transactions') }]
                 );
+                setAmount("0.00");
+                setCategory("");
+                setDescription("");
             } else {
                 throw new Error(result.error || 'Failed to add transaction');
             }
@@ -176,7 +179,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 5,
     },
     label: {
         fontSize: 20,
@@ -208,7 +211,7 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 20,
         paddingLeft: 0,
-        marginBottom: 2,
+        marginBottom: 10,
         borderBottomWidth: 1,
         borderColor: '#000000',
     },
