@@ -6,6 +6,7 @@ import { useTransactions } from '../../context/TransactionContext';
 import AuthService from '../../services/authService';
 const pencil = require("../../assets/icons/NotePencil.png");
 
+
 const BudgetPage = () => {
     const [budget, setBudget] = useState(0);
     const [modalVisible, setModalVisible] = useState(false);
@@ -107,11 +108,10 @@ const BudgetPage = () => {
             </View>
 
             <View style={styles.goalContainer}>
-                <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-                    <Text style={styles.goalText}>Monthly Budget</Text>
-                    <Image source={pencil} style={styles.image} />
+                <Text style={styles.goalText}>Monthly Budget</Text>
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <Text style={styles.amountText}>${budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
                 </TouchableOpacity>
-                <Text style={styles.amountText}>${budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
 
                 {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
@@ -120,11 +120,16 @@ const BudgetPage = () => {
                             styles.progressBar,
                             {
                                 width: `${Math.min(percentageSpent, 100)}%`,
-                                backgroundColor: percentageSpent > 100 ? '#D9534F' : '#5CB85C'
+                                backgroundColor: percentageSpent > 100 ? '#D9534F' : '#4B8FCC'
                             }
                         ]}
                     />
                 </View>
+
+                {/* Progress Label */}
+                <Text style={styles.progressLabel}>
+                    {percentageSpent.toFixed(1)}% of budget used
+                </Text>
 
                 {/* Spending Summary */}
                 <View style={styles.summaryContainer}>
@@ -137,15 +142,12 @@ const BudgetPage = () => {
                     <View style={styles.summaryItem}>
                         <Text style={styles.summaryLabel}>Remaining</Text>
                         <Text style={[styles.summaryAmount, { color: remainingBudget >= 0 ? '#5CB85C' : '#D9534F' }]}>
-                            ${(remainingBudget).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+
+                            ${remainingBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+
                         </Text>
                     </View>
                 </View>
-
-                {/* Progress Label */}
-                <Text style={styles.progressLabel}>
-                    {percentageSpent.toFixed(1)}% of budget used
-                </Text>
             </View>
 
             {/* Modal for entering budget */}
@@ -184,7 +186,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     title: {
-        fontSize: 37,
+        fontSize: 35,
         color: '#000',
     },
     header: {
@@ -195,10 +197,6 @@ const styles = StyleSheet.create({
         marginBottom: 50,
     },
     goalContainer: {
-        alignItems: 'center',
-    },
-    button: {
-        flexDirection: 'row',
         alignItems: 'center',
     },
     image: {
@@ -213,14 +211,14 @@ const styles = StyleSheet.create({
     amountText: {
         fontSize: 40,
         color: '#000',
-        marginVertical: 20,
+        marginVertical: 10,
     },
     progressBarContainer: {
         width: '100%',
         height: 8,
         backgroundColor: '#f0f0f0',
         borderRadius: 4,
-        marginVertical: 20,
+        marginTop: 40,
         overflow: 'hidden',
     },
     progressBar: {
@@ -229,22 +227,22 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     progressLabel: {
-        fontSize: 14,
+        fontSize: 18,
         color: '#6E6B65',
-        marginTop: 5,
+        marginTop: 20,
     },
     summaryContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         width: '100%',
-        marginTop: 20,
+        marginTop: 70,
     },
     summaryItem: {
         alignItems: 'center',
         flex: 1,
     },
     summaryLabel: {
-        fontSize: 16,
+        fontSize: 18,
         color: '#6E6B65',
         marginBottom: 5,
     },
