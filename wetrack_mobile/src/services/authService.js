@@ -1,4 +1,3 @@
-// src/services/authService.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
@@ -30,11 +29,13 @@ class AuthService {
       });
 
       const data = await response.json();
-      console.log('Raw server response:', data);
 
       if (!response.ok) {
         throw { response: { data } };
       }
+
+      // Clear any existing transaction data
+      await AsyncStorage.removeItem('transactions');
 
       // Store both tokens
       await AsyncStorage.setItem('accessToken', data.access);
@@ -64,7 +65,18 @@ class AuthService {
     }
   }
 
-  // Add getUserProfile method
+  async logout() {
+    try {
+      await AsyncStorage.removeItem('accessToken');
+      await AsyncStorage.removeItem('refreshToken');
+      await AsyncStorage.removeItem('user');
+      await AsyncStorage.removeItem('transactions'); // Clear transactions on logout
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  }
+
+  // Rest of the methods remain unchanged
   async getUserProfile() {
     try {
       const token = await this.getToken();
@@ -91,16 +103,12 @@ class AuthService {
     }
   }
 
-  // Simplified method to get current user
   async getCurrentUser() {
     try {
-      // First try to get from AsyncStorage
       const userStr = await AsyncStorage.getItem('user');
       if (userStr) {
         return JSON.parse(userStr);
       }
-
-      // If not in storage, fetch from API
       return await this.getUserProfile();
     } catch (error) {
       console.error('Error getting current user:', error);
@@ -154,16 +162,6 @@ class AuthService {
     } catch (error) {
       console.error('Token refresh error:', error);
       throw error;
-    }
-  }
-
-  async logout() {
-    try {
-      await AsyncStorage.removeItem('accessToken');
-      await AsyncStorage.removeItem('refreshToken');
-      await AsyncStorage.removeItem('user');
-    } catch (error) {
-      console.error('Logout error:', error);
     }
   }
 
