@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import MonthSelector from "../../components/MonthSelector.tsx";
 import { useTransactions } from '../../context/TransactionContext';
 import AuthService from '../../services/authService';
-const pencil = require("../../assets/icons/NotePencil.png");
 
 const BudgetPage = () => {
     const [budget, setBudget] = useState(0);
@@ -107,11 +106,11 @@ const BudgetPage = () => {
             </View>
 
             <View style={styles.goalContainer}>
-                <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-                    <Text style={styles.goalText}>Monthly Budget</Text>
-                    <Image source={pencil} style={styles.image} />
+            <Text style={styles.goalText}>Monthly Budget</Text>
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <Text style={styles.amountText}>${budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
                 </TouchableOpacity>
-                <Text style={styles.amountText}>${budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+
 
                 {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
@@ -125,6 +124,11 @@ const BudgetPage = () => {
                         ]}
                     />
                 </View>
+
+                {/* Progress Label */}
+                <Text style={styles.progressLabel}>
+                    {percentageSpent.toFixed(1)}% of budget used
+                </Text>
 
                 {/* Spending Summary */}
                 <View style={styles.summaryContainer}>
@@ -141,11 +145,6 @@ const BudgetPage = () => {
                         </Text>
                     </View>
                 </View>
-
-                {/* Progress Label */}
-                <Text style={styles.progressLabel}>
-                    {percentageSpent.toFixed(1)}% of budget used
-                </Text>
             </View>
 
             {/* Modal for entering budget */}
@@ -197,10 +196,6 @@ const styles = StyleSheet.create({
     goalContainer: {
         alignItems: 'center',
     },
-    button: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
     image: {
         width: 22,
         height: 22,
@@ -231,13 +226,12 @@ const styles = StyleSheet.create({
     progressLabel: {
         fontSize: 14,
         color: '#6E6B65',
-        marginTop: 5,
     },
     summaryContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         width: '100%',
-        marginTop: 20,
+        marginTop: 70,
     },
     summaryItem: {
         alignItems: 'center',
