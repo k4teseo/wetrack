@@ -8,31 +8,19 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     TextInput,
+    Image
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import { useTransactions } from '../../context/TransactionContext';
+const search = require("../../assets/icons/Search.png");
 
 const TransactionItem = ({ item }) => {
-    const getIconName = (category) => {
-        const icons = {
-            '1': 'car',
-            '2': 'restaurant',
-            '3': 'tv',
-            '4': 'document-text',
-            '5': 'cart',
-            '6': 'basket'
-        };
-        return icons[item.category] || 'cash';
-    };
-
     return (
         <View style={styles.transactionItem}>
-            <Icon name={getIconName(item.category)} size={30} color="#6c757d" style={styles.icon} />
             <View style={styles.transactionDetails}>
                 <Text style={styles.category}>{item.category_display}</Text>
                 <Text style={styles.description}>{item.description}</Text>
             </View>
-            <Text style={[styles.amount, { color: parseFloat(item.amount) < 0 ? '#D9534F' : '#5CB85C' }]}>
+            <Text style={[styles.amount, { color: '#D9534F'}]}>
                 {item.currency} {Math.abs(item.amount).toFixed(2)}
             </Text>
         </View>
@@ -49,14 +37,9 @@ const DateSection = ({ date, transactions, isExpanded, onToggle }) => {
                 onPress={onToggle}
             >
                 <View style={styles.dateHeaderLeft}>
-                    <Icon
-                        name={isExpanded ? 'chevron-down' : 'chevron-forward'}
-                        size={20}
-                        color="#6c757d"
-                    />
                     <Text style={styles.date}>{date}</Text>
                 </View>
-                <Text style={[styles.totalAmount, { color: totalAmount < 0 ? '#D9534F' : '#5CB85C' }]}>
+                <Text style={[styles.totalAmount, { color: '#D9534F'}]}>
                     {transactions[0].currency} {Math.abs(totalAmount).toFixed(2)}
                 </Text>
             </TouchableOpacity>
@@ -179,9 +162,8 @@ const TransactionPage = () => {
                 }
                 ListHeaderComponent={
                     <View style={styles.headerContainer}>
-                        <Text style={styles.header}>Transactions</Text>
                         <View style={styles.searchContainer}>
-                            <Icon name="search" size={20} color="#6c757d" style={styles.searchIcon} />
+                            <Image source={search} style={styles.searchIcon} />
                             <TextInput
                                 style={styles.searchInput}
                                 placeholder="Search descriptions..."
@@ -233,15 +215,17 @@ const styles = StyleSheet.create({
         backgroundColor: '#f5f5f5',
         borderRadius: 8,
         marginTop: 12,
-        paddingHorizontal: 12,
+        paddingHorizontal: 15,
     },
     searchIcon: {
         marginRight: 8,
+        height: 20,
+        width: 20,
     },
     searchInput: {
         flex: 1,
         paddingVertical: 8,
-        fontSize: 16,
+        fontSize: 18,
     },
     header: {
         fontSize: 24,
@@ -256,8 +240,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 16,
+        padding: 16,
         backgroundColor: '#f8f9fa',
     },
     dateHeaderLeft: {
@@ -267,21 +250,19 @@ const styles = StyleSheet.create({
     date: {
         fontSize: 18,
         fontWeight: '600',
-        color: '#6c757d',
+        color: '#000000',
         marginLeft: 8,
     },
     totalAmount: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
     },
     transactionItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 16,
+        paddingVertical: 17,
+        paddingHorizontal: 20,
         backgroundColor: '#fff',
-        borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
     },
     icon: {
         marginRight: 16,
@@ -290,15 +271,15 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     category: {
-        fontSize: 16,
-        fontWeight: '500',
+        fontSize: 15,
+        color: '#000000',
     },
     description: {
-        fontSize: 14,
+        fontSize: 15,
         color: '#6c757d',
     },
     amount: {
-        fontSize: 16,
+        fontSize: 17,
         fontWeight: 'bold',
     },
     footerSpace: {
