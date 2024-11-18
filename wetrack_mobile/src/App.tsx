@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { enableScreens } from 'react-native-screens';
 import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { TransactionProvider } from '../src/context/TransactionContext';
 
 // Auth imports
 import Login from "../src/app/(auth)/login";
@@ -28,6 +29,9 @@ enableScreens();
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+import { API_URL } from './config/api';
+console.log('API_URL:', API_URL);
 
 function CustomTabBarButton({ children, onPress }) {
     return (
@@ -147,18 +151,20 @@ function TabNavigator() {
 
 function App() {
     return (
-        <NavigationContainer>
-            <Stack.Navigator
-                initialRouteName="Login"
-                screenOptions={{
-                    headerShown: false
-                }}
-            >
-                <Stack.Screen name="Login" component={Login} />
-                <Stack.Screen name="Signup" component={Signup} />
-                <Stack.Screen name="MainApp" component={TabNavigator} />
-            </Stack.Navigator>
-        </NavigationContainer>
+        <TransactionProvider>
+            <NavigationContainer>
+                <Stack.Navigator
+                    initialRouteName="Login"
+                    screenOptions={{
+                        headerShown: false
+                    }}
+                >
+                    <Stack.Screen name="Login" component={Login} />
+                    <Stack.Screen name="Signup" component={Signup} />
+                    <Stack.Screen name="MainApp" component={TabNavigator} />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </TransactionProvider>
     );
 }
 

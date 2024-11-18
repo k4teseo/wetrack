@@ -1,56 +1,78 @@
-import React, { useState } from 'react';
-import { Button, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+// src/components/DateSelector.js
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 
-const DateSelector = () => {
+const DateSelector = ({ selectedDate: propSelectedDate, onDateChange }) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(propSelectedDate || new Date());
+
+    useEffect(() => {
+        if (propSelectedDate) {
+            setSelectedDate(propSelectedDate);
+        }
+    }, [propSelectedDate]);
+
     const handleToggleInput = () => {
         setShowDatePicker(true);
     };
 
-    const formattedDate = selectedDate.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-    });
+    const handleConfirm = (date) => {
+        console.log('Selected date:', date);
+        setShowDatePicker(false);
+        setSelectedDate(date);
+        if (onDateChange) {
+            onDateChange(date);
+        }
+    };
+
+    const formatDate = (date) => {
+        return date.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+    };
 
     return (
-        <View>
-            <TouchableOpacity onPress={handleToggleInput}>
-                <TextInput style={styles.input}
-                    placeholder={formattedDate}
-                    placeholderTextColor="#000000"
-                    editable={false}
-                    value={selectedDate}
-                />
+        <View style={styles.container}>
+            <TouchableOpacity
+                onPress={handleToggleInput}
+                style={styles.touchable}
+            >
+                <Text style={styles.dateText}>
+                    {formatDate(selectedDate)}
+                </Text>
             </TouchableOpacity>
 
             <DatePicker
-                modal={true}
+                modal
                 open={showDatePicker}
                 date={selectedDate}
                 maximumDate={new Date()}
-                mode='date'
-                onConfirm={(date) => {
-                    console.log(date);
-                    if (date) {
-                        setSelectedDate(date);
-                    }
-                    setShowDatePicker(false);
-                }}
-                onCancel={() => {
-                    setShowDatePicker(!showDatePicker);
-                }}
+                mode="date"
+                onConfirm={handleConfirm}
+                onCancel={() => setShowDatePicker(false)}
+                androidVariant="nativeAndroid"
+                textColor="#000000"
             />
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
-    input: {
+    container: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    touchable: {
+        padding: 10,
+    },
+    dateText: {
         fontSize: 25,
+        color: '#000000',
+        fontWeight: '500',
     }
-})
+});
 
 export default DateSelector;

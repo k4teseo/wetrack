@@ -148,6 +148,7 @@ JWT_AUTH_COOKIE = None
 JWT_AUTH_REFRESH_COOKIE = None
 
 REST_AUTH = {
+    'TOKEN_SERIALIZER': 'dj_rest_auth.serializers.TokenSerializer',
     'USER_DETAILS_SERIALIZER': 'auth_app.views.UserSerializer',
     'USE_JWT': True,
     'JWT_AUTH_COOKIE': None,
