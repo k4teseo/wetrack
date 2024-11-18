@@ -23,6 +23,6 @@ urlpatterns = [
     path('auth/', include('dj_rest_auth.urls')),
     path('api/auth/', include('auth_app.urls')),
     path('auth/registration/', include('dj_rest_auth.registration.urls')),
-   # path('api/currency/', include('currency.urls')),
+    path('api/currency/', include('currency.urls')),
     path('api/', include('tracker.urls')),
 ]
