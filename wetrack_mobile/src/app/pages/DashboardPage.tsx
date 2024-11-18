@@ -16,6 +16,10 @@ import AuthService from "../../services/authService";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useTransactions } from '../../context/TransactionContext';
 import Svg, { Circle, Text as SvgText } from 'react-native-svg';
+import useCurrencyConversion from '../../hooks/useCurrencyConversion';
+import { Picker } from '@react-native-picker/picker';
+import axios from 'axios';
+import { API_URL } from '../../config/api';
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -71,11 +75,54 @@ const DashboardPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentMonth, setCurrentMonth] = useState(new Date().toISOString().slice(0, 7));
   const [monthlyBudget, setMonthlyBudget] = useState(0);
+  const [amount, setAmount] = useState('');
+  const [fromCurrency, setFromCurrency] = useState('GBP');
+  const [toCurrency, setToCurrency] = useState('USD');
+  const [result, setResult] = useState(null);
+  const [availableCurrencies, setAvailableCurrencies] = useState({});
+  const [loadingCurrencies, setLoadingCurrencies] = useState(true);
+  const { convertCurrency, isLoading: conversionLoading } = useCurrencyConversion();
   const [spendingData, setSpendingData] = useState({
     totalSpent: 0,
     categoryBreakdown: {},
     spentPercentage: 0
   });
+
+  const fetchCurrencies = async () => {
+    try {
+      console.log('Fetching currencies from:', `${API_URL}/api/currency/currencies/`);
+      const response = await axios.get(`${API_URL}/api/currency/currencies/`);
+      console.log('Response:', response.data);
+
+      if (response.data && response.data.currencies) {
+        setAvailableCurrencies(response.data.currencies);
+      } else {
+        console.error('Invalid response format:', response.data);
+      }
+    } catch (error) {
+      console.error('Fetch error:', {
+        message: error.message,
+        response: error.response?.data,
+        url: error.config?.url
+      });
+    } finally {
+      setLoadingCurrencies(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrencies();
+  }, []);
+
+  const handleConvert = async () => {
+    if (!amount) return;
+    try {
+      const response = await convertCurrency(amount, fromCurrency, toCurrency);
+      setResult(response.result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // Load user data and fetch transactions
   useEffect(() => {
@@ -232,6 +279,59 @@ const DashboardPage = () => {
             </Text>
             <Icon name="chevron-down-outline" size={16} color="#000" />
           </TouchableOpacity>
+        </View>
+
+
+        <View style={[styles.card, styles.converterCard]}>
+          <Text style={styles.cardTitle}>Quick Convert</Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              value={amount}
+              onChangeText={setAmount}
+              placeholder="Enter amount"
+              keyboardType="numeric"
+              onSubmitEditing={handleConvert}
+            />
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={fromCurrency}
+                onValueChange={setFromCurrency}
+                style={styles.picker}>
+                {Object.entries(availableCurrencies).map(([code, name]) => (
+                  <Picker.Item
+                    key={code}
+                    label={`${code} - ${name}`}
+                    value={code}
+                  />
+                ))}
+              </Picker>
+            </View>
+          </View>
+
+          <Text style={styles.arrow}>↓</Text>
+
+          <View style={styles.resultContainer}>
+            <Text style={styles.resultText}>
+              {conversionLoading ? 'Converting...' : result
+                ? `${result.toFixed(2)} ${toCurrency}`
+                : '0.00'}
+            </Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={toCurrency}
+                onValueChange={setToCurrency}
+                style={styles.picker}>
+                {Object.entries(availableCurrencies).map(([code, name]) => (
+                  <Picker.Item
+                    key={code}
+                    label={`${code} - ${name}`}
+                    value={code}
+                  />
+                ))}
+              </Picker>
+            </View>
+          </View>
         </View>
 
         <View style={[styles.card, styles.spendingSummaryCard]}>
