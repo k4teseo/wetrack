@@ -3,29 +3,42 @@ import { Text, StyleSheet, View, TextInput, TouchableOpacity, Modal, Button, Ima
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MonthSelector from "../../components/MonthSelector.tsx";
 import { useTransactions } from '../../context/TransactionContext';
+import AuthService from '../../services/authService';
 
 const BudgetPage = () => {
     const [budget, setBudget] = useState(0);
     const [modalVisible, setModalVisible] = useState(false);
     const [inputValue, setInputValue] = useState(budget.toString());
-    const [currentMonth, setCurrentMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM format
+    const [currentMonth, setCurrentMonth] = useState(new Date().toISOString().slice(0, 7));
     const [totalSpent, setTotalSpent] = useState(0);
+    const [userId, setUserId] = useState(null);
     const { transactions } = useTransactions();
 
-    // Load saved budget when component mounts or month changes
+    // Get user ID when component mounts
     useEffect(() => {
-        loadBudget();
-    }, [currentMonth]);
+        const getUserId = async () => {
+            const user = await AuthService.getCurrentUser();
+            if (user && user.id) {
+                setUserId(user.id);
+            }
+        };
+        getUserId();
+    }, []);
 
-    // Calculate total spending whenever transactions change
+    // Load saved budget when component mounts, month changes, or userId changes
+    useEffect(() => {
+        if (userId) {
+            loadBudget();
+        }
+    }, [currentMonth, userId]);
+
     useEffect(() => {
         calculateMonthlySpending();
-        // console.log('Current transactions:', transactions); // Debug log
     }, [transactions, currentMonth]);
 
     const loadBudget = async () => {
         try {
-            const savedBudget = await AsyncStorage.getItem(`budget_${currentMonth}`);
+            const savedBudget = await AsyncStorage.getItem(`budget_${userId}_${currentMonth}`);
             if (savedBudget !== null) {
                 setBudget(parseFloat(savedBudget));
                 setInputValue(savedBudget);
@@ -36,6 +49,19 @@ const BudgetPage = () => {
         } catch (error) {
             console.error('Error loading budget:', error);
         }
+    };
+
+    const handleSave = async () => {
+        if (!userId) return;
+
+        const formattedValue = parseFloat(inputValue) || 0;
+        setBudget(formattedValue);
+        try {
+            await AsyncStorage.setItem(`budget_${userId}_${currentMonth}`, formattedValue.toString());
+        } catch (error) {
+            console.error('Error saving budget:', error);
+        }
+        setModalVisible(false);
     };
 
     const calculateMonthlySpending = () => {
@@ -64,17 +90,6 @@ const BudgetPage = () => {
         setTotalSpent(total);
     };
 
-    const handleSave = async () => {
-        const formattedValue = parseFloat(inputValue) || 0;
-        setBudget(formattedValue);
-        try {
-            await AsyncStorage.setItem(`budget_${currentMonth}`, formattedValue.toString());
-        } catch (error) {
-            console.error('Error saving budget:', error);
-        }
-        setModalVisible(false);
-    };
-
     const handleMonthChange = (month) => {
         console.log('Month changed to:', month); // Debug log
         setCurrentMonth(month);
@@ -91,10 +106,11 @@ const BudgetPage = () => {
             </View>
 
             <View style={styles.goalContainer}>
-                <Text style={styles.goalText}>Monthly Budget</Text>
+            <Text style={styles.goalText}>Monthly Budget</Text>
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
                     <Text style={styles.amountText}>${budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
                 </TouchableOpacity>
+
 
                 {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
@@ -103,7 +119,7 @@ const BudgetPage = () => {
                             styles.progressBar,
                             {
                                 width: `${Math.min(percentageSpent, 100)}%`,
-                                backgroundColor: percentageSpent > 100 ? '#D9534F' : '#4B8FCC'
+                                backgroundColor: percentageSpent > 100 ? '#D9534F' : '#5CB85C'
                             }
                         ]}
                     />
@@ -125,7 +141,7 @@ const BudgetPage = () => {
                     <View style={styles.summaryItem}>
                         <Text style={styles.summaryLabel}>Remaining</Text>
                         <Text style={[styles.summaryAmount, { color: remainingBudget >= 0 ? '#5CB85C' : '#D9534F' }]}>
-                            ${remainingBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            ${(remainingBudget).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </Text>
                     </View>
                 </View>
@@ -167,7 +183,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     title: {
-        fontSize: 35,
+        fontSize: 37,
         color: '#000',
     },
     header: {
@@ -192,14 +208,14 @@ const styles = StyleSheet.create({
     amountText: {
         fontSize: 40,
         color: '#000',
-        marginVertical: 10,
+        marginVertical: 20,
     },
     progressBarContainer: {
         width: '100%',
         height: 8,
         backgroundColor: '#f0f0f0',
         borderRadius: 4,
-        marginTop: 40,
+        marginVertical: 20,
         overflow: 'hidden',
     },
     progressBar: {
@@ -208,9 +224,8 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     progressLabel: {
-        fontSize: 18,
+        fontSize: 14,
         color: '#6E6B65',
-        marginTop: 20,
     },
     summaryContainer: {
         flexDirection: 'row',
@@ -223,7 +238,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     summaryLabel: {
-        fontSize: 18,
+        fontSize: 16,
         color: '#6E6B65',
         marginBottom: 5,
     },

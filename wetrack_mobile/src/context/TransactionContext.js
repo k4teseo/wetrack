@@ -1,7 +1,7 @@
-// src/context/TransactionContext.js
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { Platform } from 'react-native';
-import AuthService from '../services/authService';  // Make sure path is correct
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AuthService from '../services/authService';
 
 const API_URL = __DEV__
   ? Platform.OS === 'android'
@@ -25,19 +25,29 @@ const TransactionContext = createContext({
 
 export const TransactionProvider = ({ children }) => {
     const [transactions, setTransactions] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const initializeTransactions = async () => {
+            const isAuth = await AuthService.isAuthenticated();
+            if (isAuth) {
+                await fetchTransactions();
+            }
+        };
+
+        initializeTransactions();
+    }, []);
 
     const getAuthHeaders = async () => {
         try {
             const token = await AuthService.getToken();
-            console.log('Got token for request:', token); // Debug log
             if (!token) {
                 throw new Error('No authentication token found');
             }
             return {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`, // Using Bearer for JWT
+                'Authorization': `Bearer ${token}`,
             };
         } catch (error) {
             console.error('Error getting auth headers:', error);
@@ -48,12 +58,9 @@ export const TransactionProvider = ({ children }) => {
     const handleAuthError = async (error) => {
         if (error.message.includes('401')) {
             try {
-                // Try to refresh the token
                 await AuthService.refreshAccessToken();
-                // Retry the original request
                 return true;
             } catch (refreshError) {
-                // If refresh fails, logout
                 await AuthService.logout();
                 return false;
             }
@@ -65,15 +72,10 @@ export const TransactionProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log('Fetching transactions...');
             const headers = await getAuthHeaders();
-            console.log('Using headers:', headers);
-
             const response = await fetch(`${API_URL}${API_ENDPOINTS.TRANSACTIONS}`, {
                 headers,
             });
-
-            console.log('Transaction response status:', response.status);
 
             if (!response.ok) {
                 if (response.status === 401) {
@@ -87,8 +89,8 @@ export const TransactionProvider = ({ children }) => {
             }
 
             const data = await response.json();
-            // console.log('Received transactions:', data);
             setTransactions(data);
+            await AsyncStorage.setItem('transactions', JSON.stringify(data));
             return { success: true, data };
         } catch (error) {
             console.error('Error fetching transactions:', error);
@@ -99,35 +101,38 @@ export const TransactionProvider = ({ children }) => {
         }
     };
 
-    const addTransaction = async (transaction) => {
+    const addTransaction = async (transactionData) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log('Adding transaction:', transaction);
             const headers = await getAuthHeaders();
             const response = await fetch(`${API_URL}${API_ENDPOINTS.TRANSACTIONS}`, {
                 method: 'POST',
                 headers,
-                body: JSON.stringify(transaction),
+                body: JSON.stringify(transactionData),
             });
-
-            console.log('Add transaction response status:', response.status);
 
             if (!response.ok) {
                 if (response.status === 401) {
                     const retried = await handleAuthError(new Error('401'));
                     if (retried) {
-                        return addTransaction(transaction);
+                        return addTransaction(transactionData);
                     }
                 }
                 const errorData = await response.json();
                 throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
-            console.log('Added transaction response:', data);
-            setTransactions(prevTransactions => [...prevTransactions, data]);
-            return { success: true, data };
+            const newTransaction = await response.json();
+
+            // Update local state with the new transaction
+            const updatedTransactions = [...transactions, newTransaction];
+            setTransactions(updatedTransactions);
+
+            // Update AsyncStorage
+            await AsyncStorage.setItem('transactions', JSON.stringify(updatedTransactions));
+
+            return { success: true, data: newTransaction };
         } catch (error) {
             console.error('Error adding transaction:', error);
             setError(error.message);
@@ -141,7 +146,6 @@ export const TransactionProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log('Deleting transaction:', transactionId);
             const headers = await getAuthHeaders();
             const response = await fetch(`${API_URL}${API_ENDPOINTS.TRANSACTIONS}${transactionId}/`, {
                 method: 'DELETE',
@@ -155,12 +159,17 @@ export const TransactionProvider = ({ children }) => {
                         return deleteTransaction(transactionId);
                     }
                 }
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorData = await response.json();
+                throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
             }
 
-            setTransactions(prevTransactions =>
-                prevTransactions.filter(transaction => transaction.id !== transactionId)
-            );
+            // Update local state
+            const updatedTransactions = transactions.filter(t => t.id !== transactionId);
+            setTransactions(updatedTransactions);
+
+            // Update AsyncStorage
+            await AsyncStorage.setItem('transactions', JSON.stringify(updatedTransactions));
+
             return { success: true };
         } catch (error) {
             console.error('Error deleting transaction:', error);
@@ -171,37 +180,40 @@ export const TransactionProvider = ({ children }) => {
         }
     };
 
-    const updateTransaction = async (transactionId, updatedData) => {
+    const updateTransaction = async (transactionId, updateData) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log('Updating transaction:', transactionId, updatedData);
             const headers = await getAuthHeaders();
             const response = await fetch(`${API_URL}${API_ENDPOINTS.TRANSACTIONS}${transactionId}/`, {
                 method: 'PATCH',
                 headers,
-                body: JSON.stringify(updatedData),
+                body: JSON.stringify(updateData),
             });
 
             if (!response.ok) {
                 if (response.status === 401) {
                     const retried = await handleAuthError(new Error('401'));
                     if (retried) {
-                        return updateTransaction(transactionId, updatedData);
+                        return updateTransaction(transactionId, updateData);
                     }
                 }
                 const errorData = await response.json();
                 throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
-            console.log('Updated transaction response:', data);
-            setTransactions(prevTransactions =>
-                prevTransactions.map(transaction =>
-                    transaction.id === transactionId ? data : transaction
-                )
+            const updatedTransaction = await response.json();
+
+            // Update local state
+            const updatedTransactions = transactions.map(t =>
+                t.id === transactionId ? updatedTransaction : t
             );
-            return { success: true, data };
+            setTransactions(updatedTransactions);
+
+            // Update AsyncStorage
+            await AsyncStorage.setItem('transactions', JSON.stringify(updatedTransactions));
+
+            return { success: true, data: updatedTransaction };
         } catch (error) {
             console.error('Error updating transaction:', error);
             setError(error.message);
@@ -215,8 +227,8 @@ export const TransactionProvider = ({ children }) => {
         transactions,
         isLoading,
         error,
-        addTransaction,
         fetchTransactions,
+        addTransaction,
         deleteTransaction,
         updateTransaction,
     };

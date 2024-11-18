@@ -10,8 +10,8 @@ import {
     TextInput,
     Image
 } from 'react-native';
-const search = require('../../assets/icons/Search.png');
 import { useTransactions } from '../../context/TransactionContext';
+const search = require("../../assets/icons/Search.png");
 
 const TransactionItem = ({ item }) => {
     return (
@@ -80,11 +80,7 @@ const TransactionPage = () => {
     // Group transactions by date
     const getGroupedTransactions = (filteredTransactions) => {
         return filteredTransactions.reduce((acc, transaction) => {
-            const date = new Date(transaction.date).toLocaleDateString('en-US', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
-            });
+            const date = new Date(transaction.date).toLocaleDateString();
             if (!acc[date]) {
                 acc[date] = [];
             }
@@ -166,7 +162,6 @@ const TransactionPage = () => {
                 }
                 ListHeaderComponent={
                     <View style={styles.headerContainer}>
-
                         <View style={styles.searchContainer}>
                             <Image source={search} style={styles.searchIcon} />
                             <TextInput
@@ -223,7 +218,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
     },
     searchIcon: {
-        marginRight: 6,
+        marginRight: 8,
         height: 20,
         width: 20,
     },
@@ -245,8 +240,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 16,
-        paddingHorizontal: 16,
+        padding: 16,
         backgroundColor: '#f8f9fa',
     },
     dateHeaderLeft: {
@@ -277,7 +271,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     category: {
-        fontSize: 18,
+        fontSize: 15,
         color: '#000000',
     },
     description: {
