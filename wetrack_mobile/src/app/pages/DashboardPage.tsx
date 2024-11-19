@@ -25,7 +25,7 @@ const screenWidth = Dimensions.get("window").width;
 
 const CircularProgress = ({ percentage }) => {
   const radius = 70;
-  const strokeWidth = 15;
+  const strokeWidth = 12; // Slightly reduced stroke width
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
@@ -36,7 +36,7 @@ const CircularProgress = ({ percentage }) => {
           cx={radius + strokeWidth/2}
           cy={radius + strokeWidth/2}
           r={radius}
-          stroke="#3d5875"
+          stroke="#E8EDF1"
           strokeWidth={strokeWidth}
           fill="none"
         />
@@ -44,7 +44,7 @@ const CircularProgress = ({ percentage }) => {
           cx={radius + strokeWidth/2}
           cy={radius + strokeWidth/2}
           r={radius}
-          stroke="#00e0ff"
+          stroke="#2196F3"
           strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={circumference}
@@ -58,10 +58,20 @@ const CircularProgress = ({ percentage }) => {
           textAnchor="middle"
           alignmentBaseline="middle"
           fill="#333"
-          fontSize="24"
+          fontSize="32"
           fontWeight="bold"
         >
-          {percentage.toFixed(1)}%
+          {percentage.toFixed(1)}
+        </SvgText>
+        <SvgText
+          x={radius + strokeWidth/2}
+          y={radius + strokeWidth/2 + 24}
+          textAnchor="middle"
+          alignmentBaseline="middle"
+          fill="#666"
+          fontSize="16"
+        >
+          %
         </SvgText>
       </Svg>
     </View>
@@ -271,88 +281,120 @@ const DashboardPage = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
+        {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.greeting}>Hi, {userData?.username || "Name"}!</Text>
-          <TouchableOpacity style={styles.dateContainer}>
-            <Text style={styles.dateText}>
-              {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
-            </Text>
-            <Icon name="chevron-down-outline" size={16} color="#000" />
-          </TouchableOpacity>
+          <Text style={styles.greeting}>Hi, {userData?.username || "User"}!</Text>
+          <Text style={styles.dateText}>
+            {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
+          </Text>
         </View>
 
-
-        <View style={[styles.card, styles.converterCard]}>
+        {/* Currency Converter Card */}
+        <View style={styles.card}>
           <Text style={styles.cardTitle}>Quick Convert</Text>
-          <View style={styles.inputContainer}>
+
+          {/* Top Currency Input */}
+          <View style={styles.converterInputContainer}>
             <TextInput
-              style={styles.input}
+              style={styles.converterInput}
               value={amount}
               onChangeText={setAmount}
-              placeholder="Enter amount"
+              placeholder="0"
               keyboardType="numeric"
               onSubmitEditing={handleConvert}
             />
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={fromCurrency}
-                onValueChange={setFromCurrency}
-                style={styles.picker}>
+                style={styles.currencyPicker}
+                onValueChange={(itemValue) => {
+                  setFromCurrency(itemValue);
+                  handleConvert();
+                }}>
                 {Object.entries(availableCurrencies).map(([code, name]) => (
-                  <Picker.Item
-                    key={code}
-                    label={`${code} - ${name}`}
-                    value={code}
-                  />
+                  <Picker.Item key={code} label={`${code} - ${name}`} value={code} />
                 ))}
               </Picker>
             </View>
           </View>
 
-          <Text style={styles.arrow}>↓</Text>
-
-          <View style={styles.resultContainer}>
-            <Text style={styles.resultText}>
-              {conversionLoading ? 'Converting...' : result
-                ? `${result.toFixed(2)} ${toCurrency}`
-                : '0.00'}
+          {/* Bottom Currency Input */}
+          <View style={styles.converterInputContainer}>
+            <Text style={styles.converterResult}>
+              {result ? result.toFixed(2) : '0.00'}
             </Text>
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={toCurrency}
-                onValueChange={setToCurrency}
-                style={styles.picker}>
+                style={styles.currencyPicker}
+                onValueChange={(itemValue) => {
+                  setToCurrency(itemValue);
+                  handleConvert();
+                }}>
                 {Object.entries(availableCurrencies).map(([code, name]) => (
-                  <Picker.Item
-                    key={code}
-                    label={`${code} - ${name}`}
-                    value={code}
-                  />
+                  <Picker.Item key={code} label={`${code} - ${name}`} value={code} />
                 ))}
               </Picker>
             </View>
           </View>
         </View>
 
-        <View style={[styles.card, styles.spendingSummaryCard]}>
+        {/* Spending Summary Card */}
+        <View style={styles.card}>
           <Text style={styles.cardTitle}>Spending Summary</Text>
           <CircularProgress percentage={spendingData.spentPercentage} />
           <View style={styles.budgetDetails}>
-            <Text style={styles.budgetText}>
-              Budget: £{monthlyBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </Text>
-            <Text style={styles.spentText}>
-              Spent: £{spendingData.totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </Text>
-            <Text style={styles.remainingText}>
-              Remaining: £{Math.max(0, monthlyBudget - spendingData.totalSpent).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </Text>
+            <View style={styles.budgetRow}>
+              <Text style={styles.budgetLabel}>Budget</Text>
+              <Text style={styles.budgetAmount}>
+                £{monthlyBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </Text>
+            </View>
+            <View style={styles.budgetRow}>
+              <Text style={styles.spentLabel}>Spent</Text>
+              <Text style={styles.spentAmount}>
+                £{spendingData.totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </Text>
+            </View>
+            <View style={styles.budgetRow}>
+              <Text style={styles.remainingLabel}>Remaining</Text>
+              <Text style={styles.remainingAmount}>
+                £{Math.max(0, monthlyBudget - spendingData.totalSpent).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </Text>
+            </View>
           </View>
         </View>
 
-        <View style={[styles.card, styles.categoryBreakdownCard]}>
+        {/* Category Breakdown Card */}
+        <View style={styles.card}>
           <Text style={styles.cardTitle}>Category Breakdown</Text>
-          {renderCategoryBreakdown()}
+          {Object.entries(spendingData.categoryBreakdown).map(([category, amount], index) => (
+            <View key={category} style={styles.categoryItem}>
+              <View style={styles.categoryHeader}>
+                <Text style={styles.categoryName}>{category}</Text>
+                <Text style={styles.categoryAmount}>
+                  £{amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </Text>
+              </View>
+              <View style={styles.progressBarContainer}>
+                <View
+                  style={[
+                    styles.progressBar,
+                    {
+                      width: `${(amount / spendingData.totalSpent) * 100}%`,
+                      backgroundColor: [
+                        '#2196F3',
+                        '#4CAF50',
+                        '#FF9800',
+                        '#9C27B0',
+                        '#F44336'
+                      ][index % 5]
+                    }
+                  ]}
+                />
+              </View>
+            </View>
+          ))}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -362,10 +404,10 @@ const DashboardPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-    paddingHorizontal: 16,
+    backgroundColor: "#F5F7FA",
   },
   loadingContainer: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -373,88 +415,131 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginVertical: 16,
+    padding: 16,
   },
   greeting: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#666",
+    color: "#1A1A1A",
   },
   dateContainer: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    padding: 8,
+    borderRadius: 8,
+    elevation: 2,
   },
   dateText: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#000",
+    fontSize: 14,
     marginRight: 4,
+    color: "#1A1A1A",
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#FFFFFF",
     borderRadius: 12,
     padding: 16,
-    marginVertical: 8,
-    borderWidth: 1,
-    borderColor: "#ccc",
+    margin: 16,
+    elevation: 2,
   },
   cardTitle: {
     fontSize: 18,
     fontWeight: "600",
     marginBottom: 16,
-    color: "#333",
+    color: "#1A1A1A",
+  },
+  converterInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F5F7FA",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 8,
+  },
+  converterInput: {
+    flex: 1,
+    fontSize: 24,
+    color: "#1A1A1A",
+  },
+  converterResult: {
+    flex: 1,
+    fontSize: 24,
+    color: "#1A1A1A",
+  },
+  pickerContainer: {
+    width: 120,
+  },
+  currencyPicker: {
+    width: "100%",
+  },
+  swapButton: {
+    alignSelf: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    marginVertical: 8,
   },
   circularProgressContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 20,
+    alignItems: "center",
+    marginVertical: 16,
   },
   budgetDetails: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  budgetText: {
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 8,
-  },
-  spentText: {
-    fontSize: 16,
-    color: "#d32f2f",
-    marginBottom: 8,
-  },
-  remainingText: {
-    fontSize: 16,
-    color: "#388e3c",
-  },
-  categoryBreakdownCard: {
     marginTop: 16,
+  },
+  budgetRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  budgetLabel: {
+    color: "#666666",
+  },
+  budgetAmount: {
+    fontWeight: "600",
+    color: "#1A1A1A",
+  },
+  spentLabel: {
+    color: "#666666",
+  },
+  spentAmount: {
+    fontWeight: "600",
+    color: "#F44336",
+  },
+  remainingLabel: {
+    color: "#666666",
+  },
+  remainingAmount: {
+    fontWeight: "600",
+    color: "#4CAF50",
   },
   categoryItem: {
     marginBottom: 16,
   },
   categoryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 8,
   },
   categoryName: {
-    fontSize: 14,
-    color: "#333",
+    color: "#666666",
   },
   categoryAmount: {
-    fontSize: 14,
     fontWeight: "600",
-    color: "#333",
+    color: "#1A1A1A",
   },
   progressBarContainer: {
     height: 8,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#F5F7FA",
     borderRadius: 4,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   progressBar: {
-    height: '100%',
+    height: "100%",
     borderRadius: 4,
   },
 });
