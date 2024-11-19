@@ -10,8 +10,8 @@ import {
     TextInput,
     Image
 } from 'react-native';
-const search = require('../../assets/icons/Search.png');
 import { useTransactions } from '../../context/TransactionContext';
+const search = require("../../assets/icons/Search.png");
 
 const TransactionItem = ({ item }) => {
     return (
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
     },
     searchIcon: {
-        marginRight: 6,
+        marginRight: 8,
         height: 20,
         width: 20,
     },
@@ -245,8 +245,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 16,
-        paddingHorizontal: 16,
+        padding: 16,
         backgroundColor: '#f8f9fa',
     },
     dateHeaderLeft: {
@@ -277,7 +276,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     category: {
-        fontSize: 18,
+        fontSize: 15,
         color: '#000000',
     },
     description: {

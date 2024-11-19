@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import MonthSelector from "../../components/MonthSelector.tsx";
 import { useTransactions } from '../../context/TransactionContext';
 import AuthService from '../../services/authService';
-const pencil = require("../../assets/icons/NotePencil.png");
 
 
 const BudgetPage = () => {
@@ -108,10 +107,12 @@ const BudgetPage = () => {
             </View>
 
             <View style={styles.goalContainer}>
-                <Text style={styles.goalText}>Monthly Budget</Text>
+              
+            <Text style={styles.goalText}>Monthly Budget</Text>
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
-                    <Text style={styles.amountText}>${budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+                    <Text style={styles.amountText}>£{budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
                 </TouchableOpacity>
+
 
                 {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
@@ -136,14 +137,14 @@ const BudgetPage = () => {
                     <View style={styles.summaryItem}>
                         <Text style={styles.summaryLabel}>Spent</Text>
                         <Text style={[styles.summaryAmount, { color: '#D9534F' }]}>
-                            ${totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            £{totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </Text>
                     </View>
                     <View style={styles.summaryItem}>
                         <Text style={styles.summaryLabel}>Remaining</Text>
                         <Text style={[styles.summaryAmount, { color: remainingBudget >= 0 ? '#5CB85C' : '#D9534F' }]}>
 
-                            ${remainingBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            £{(remainingBudget).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 
                         </Text>
                     </View>
@@ -229,7 +230,6 @@ const styles = StyleSheet.create({
     progressLabel: {
         fontSize: 18,
         color: '#6E6B65',
-        marginTop: 20,
     },
     summaryContainer: {
         flexDirection: 'row',
