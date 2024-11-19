@@ -1,4 +1,3 @@
-// src/app/pages/AddTransactionPage.tsx
 import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
 import { useTransactions } from '../../context/TransactionContext';
@@ -53,36 +52,39 @@ const AddTransactionPage = ({ navigation }) => {
             setIsSubmitting(true);
             const formattedDate = formatDate(transactionDate);
 
-            console.log('Submitting transaction:', {
-                date: formattedDate,
-                amount: parseFloat(amount),
-                category,
-                description
-            });
-
-            const result = await addTransaction({
+            const transactionData = {
                 date: formattedDate,
                 amount: parseFloat(amount),
                 category,
                 description,
                 currency: 'GBP'
-            });
+            };
 
-            if (result.success) {
+            console.log('Submitting transaction:', transactionData);
+
+            // Wrap the addTransaction call in a try-catch and handle the response properly
+            try {
+                await addTransaction(transactionData);
+
+                // If we reach here, the transaction was successful
                 Alert.alert(
                     "Success",
                     "Transaction added successfully",
-                    [{ text: "OK", onPress: () => navigation.navigate('Transactions') }]
+                    [{
+                        text: "OK",
+                        onPress: () => navigation.navigate('Transactions')
+                    }]
                 );
-                setAmount("0.00");
-                setCategory("");
-                setDescription("");
-            } else {
-                throw new Error(result.error || 'Failed to add transaction');
+            } catch (error) {
+                throw new Error(error?.message || 'Failed to add transaction');
+
             }
         } catch (error) {
             console.error('Error adding transaction:', error);
-            Alert.alert("Error", error.message || "Failed to add transaction");
+            Alert.alert(
+                "Error",
+                error.message || "An unexpected error occurred while adding the transaction"
+            );
         } finally {
             setIsSubmitting(false);
         }
