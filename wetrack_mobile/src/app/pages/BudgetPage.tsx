@@ -108,7 +108,7 @@ const BudgetPage = () => {
             <View style={styles.goalContainer}>
             <Text style={styles.goalText}>Monthly Budget</Text>
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
-                    <Text style={styles.amountText}>${budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+                    <Text style={styles.amountText}>£{budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
                 </TouchableOpacity>
 
 
@@ -135,13 +135,13 @@ const BudgetPage = () => {
                     <View style={styles.summaryItem}>
                         <Text style={styles.summaryLabel}>Spent</Text>
                         <Text style={[styles.summaryAmount, { color: '#D9534F' }]}>
-                            ${totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            £{totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </Text>
                     </View>
                     <View style={styles.summaryItem}>
                         <Text style={styles.summaryLabel}>Remaining</Text>
                         <Text style={[styles.summaryAmount, { color: remainingBudget >= 0 ? '#5CB85C' : '#D9534F' }]}>
-                            ${(remainingBudget).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            £{(remainingBudget).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </Text>
                     </View>
                 </View>
