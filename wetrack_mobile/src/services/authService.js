@@ -65,6 +65,29 @@ class AuthService {
     }
   }
 
+   async register(userData) {
+      try {
+        const response = await fetch(`${API_URL}${AUTH_ENDPOINTS.REGISTER}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(userData),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw { response: { data } };
+        }
+
+        return data;
+      } catch (error) {
+        console.error('Registration error details:', error);
+        throw error;
+      }
+    }
+
   async logout() {
     try {
       await AsyncStorage.removeItem('accessToken');
