@@ -54,11 +54,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     input: {
-        fontSize: 20,
+        fontSize: 22,
     },
     image: {
         width: 22,
         height: 22,
+        marginLeft: 3,
     }
 })
 
