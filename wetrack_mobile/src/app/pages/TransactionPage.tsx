@@ -80,7 +80,11 @@ const TransactionPage = () => {
     // Group transactions by date
     const getGroupedTransactions = (filteredTransactions) => {
         return filteredTransactions.reduce((acc, transaction) => {
-            const date = new Date(transaction.date).toLocaleDateString();
+            const date = new Date(transaction.date).toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+            });
             if (!acc[date]) {
                 acc[date] = [];
             }
@@ -162,6 +166,7 @@ const TransactionPage = () => {
                 }
                 ListHeaderComponent={
                     <View style={styles.headerContainer}>
+
                         <View style={styles.searchContainer}>
                             <Image source={search} style={styles.searchIcon} />
                             <TextInput
