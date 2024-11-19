@@ -5,6 +5,7 @@ import MonthSelector from "../../components/MonthSelector.tsx";
 import { useTransactions } from '../../context/TransactionContext';
 import AuthService from '../../services/authService';
 
+
 const BudgetPage = () => {
     const [budget, setBudget] = useState(0);
     const [modalVisible, setModalVisible] = useState(false);
@@ -106,6 +107,7 @@ const BudgetPage = () => {
             </View>
 
             <View style={styles.goalContainer}>
+              
             <Text style={styles.goalText}>Monthly Budget</Text>
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
                     <Text style={styles.amountText}>£{budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
@@ -119,7 +121,7 @@ const BudgetPage = () => {
                             styles.progressBar,
                             {
                                 width: `${Math.min(percentageSpent, 100)}%`,
-                                backgroundColor: percentageSpent > 100 ? '#D9534F' : '#5CB85C'
+                                backgroundColor: percentageSpent > 100 ? '#D9534F' : '#4B8FCC'
                             }
                         ]}
                     />
@@ -141,7 +143,9 @@ const BudgetPage = () => {
                     <View style={styles.summaryItem}>
                         <Text style={styles.summaryLabel}>Remaining</Text>
                         <Text style={[styles.summaryAmount, { color: remainingBudget >= 0 ? '#5CB85C' : '#D9534F' }]}>
+
                             £{(remainingBudget).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+
                         </Text>
                     </View>
                 </View>
@@ -183,7 +187,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     title: {
-        fontSize: 37,
+        fontSize: 35,
         color: '#000',
     },
     header: {
@@ -208,14 +212,14 @@ const styles = StyleSheet.create({
     amountText: {
         fontSize: 40,
         color: '#000',
-        marginVertical: 20,
+        marginVertical: 10,
     },
     progressBarContainer: {
         width: '100%',
         height: 8,
         backgroundColor: '#f0f0f0',
         borderRadius: 4,
-        marginVertical: 20,
+        marginTop: 40,
         overflow: 'hidden',
     },
     progressBar: {
@@ -224,7 +228,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     progressLabel: {
-        fontSize: 14,
+        fontSize: 18,
         color: '#6E6B65',
     },
     summaryContainer: {
@@ -238,7 +242,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     summaryLabel: {
-        fontSize: 16,
+        fontSize: 18,
         color: '#6E6B65',
         marginBottom: 5,
     },
